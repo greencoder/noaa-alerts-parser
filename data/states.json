@@ -1,0 +1,277 @@
+[
+    {
+        "fips": "002", 
+        "abbr": "AK", 
+        "name": "Alaska"
+    }, 
+    {
+        "fips": "001", 
+        "abbr": "AL", 
+        "name": "Alabama"
+    }, 
+    {
+        "fips": "005", 
+        "abbr": "AR", 
+        "name": "Arkansas"
+    }, 
+    {
+        "fips": "060", 
+        "abbr": "AS", 
+        "name": "American Samoa"
+    }, 
+    {
+        "fips": "004", 
+        "abbr": "AZ", 
+        "name": "Arizona"
+    }, 
+    {
+        "fips": "006", 
+        "abbr": "CA", 
+        "name": "California"
+    }, 
+    {
+        "fips": "008", 
+        "abbr": "CO", 
+        "name": "Colorado"
+    }, 
+    {
+        "fips": "009", 
+        "abbr": "CT", 
+        "name": "Connecticut"
+    }, 
+    {
+        "fips": "011", 
+        "abbr": "DC", 
+        "name": "District of Columbia"
+    }, 
+    {
+        "fips": "010", 
+        "abbr": "DE", 
+        "name": "Delaware"
+    }, 
+    {
+        "fips": "012", 
+        "abbr": "FL", 
+        "name": "Florida"
+    }, 
+    {
+        "fips": "013", 
+        "abbr": "GA", 
+        "name": "Georgia"
+    }, 
+    {
+        "fips": "066", 
+        "abbr": "GU", 
+        "name": "Guam"
+    }, 
+    {
+        "fips": "015", 
+        "abbr": "HI", 
+        "name": "Hawaii"
+    }, 
+    {
+        "fips": "019", 
+        "abbr": "IA", 
+        "name": "Iowa"
+    }, 
+    {
+        "fips": "016", 
+        "abbr": "ID", 
+        "name": "Idaho"
+    }, 
+    {
+        "fips": "017", 
+        "abbr": "IL", 
+        "name": "Illinois"
+    }, 
+    {
+        "fips": "018", 
+        "abbr": "IN", 
+        "name": "Indiana"
+    }, 
+    {
+        "fips": "020", 
+        "abbr": "KS", 
+        "name": "Kansas"
+    }, 
+    {
+        "fips": "021", 
+        "abbr": "KY", 
+        "name": "Kentucky"
+    }, 
+    {
+        "fips": "022", 
+        "abbr": "LA", 
+        "name": "Louisiana"
+    }, 
+    {
+        "fips": "025", 
+        "abbr": "MA", 
+        "name": "Massachusetts"
+    }, 
+    {
+        "fips": "024", 
+        "abbr": "MD", 
+        "name": "Maryland"
+    }, 
+    {
+        "fips": "023", 
+        "abbr": "ME", 
+        "name": "Maine"
+    }, 
+    {
+        "fips": "026", 
+        "abbr": "MI", 
+        "name": "Michigan"
+    }, 
+    {
+        "fips": "027", 
+        "abbr": "MN", 
+        "name": "Minnesota"
+    }, 
+    {
+        "fips": "029", 
+        "abbr": "MO", 
+        "name": "Missouri"
+    }, 
+    {
+        "fips": "028", 
+        "abbr": "MS", 
+        "name": "Mississippi"
+    }, 
+    {
+        "fips": "030", 
+        "abbr": "MT", 
+        "name": "Montana"
+    }, 
+    {
+        "fips": "037", 
+        "abbr": "NC", 
+        "name": "North Carolina"
+    }, 
+    {
+        "fips": "038", 
+        "abbr": "ND", 
+        "name": "North Dakota"
+    }, 
+    {
+        "fips": "031", 
+        "abbr": "NE", 
+        "name": "Nebraska"
+    }, 
+    {
+        "fips": "033", 
+        "abbr": "NH", 
+        "name": "New Hampshire"
+    }, 
+    {
+        "fips": "034", 
+        "abbr": "NJ", 
+        "name": "New Jersey"
+    }, 
+    {
+        "fips": "035", 
+        "abbr": "NM", 
+        "name": "New Mexico"
+    }, 
+    {
+        "fips": "032", 
+        "abbr": "NV", 
+        "name": "Nevada"
+    }, 
+    {
+        "fips": "036", 
+        "abbr": "NY", 
+        "name": "New York"
+    }, 
+    {
+        "fips": "039", 
+        "abbr": "OH", 
+        "name": "Ohio"
+    }, 
+    {
+        "fips": "040", 
+        "abbr": "OK", 
+        "name": "Oklahoma"
+    }, 
+    {
+        "fips": "041", 
+        "abbr": "OR", 
+        "name": "Oregon"
+    }, 
+    {
+        "fips": "042", 
+        "abbr": "PA", 
+        "name": "Pennsylvania"
+    }, 
+    {
+        "fips": "072", 
+        "abbr": "PR", 
+        "name": "Puerto Rico"
+    }, 
+    {
+        "fips": "044", 
+        "abbr": "RI", 
+        "name": "Rhode Island"
+    }, 
+    {
+        "fips": "045", 
+        "abbr": "SC", 
+        "name": "South Carolina"
+    }, 
+    {
+        "fips": "046", 
+        "abbr": "SD", 
+        "name": "South Dakota"
+    }, 
+    {
+        "fips": "047", 
+        "abbr": "TN", 
+        "name": "Tennessee"
+    }, 
+    {
+        "fips": "048", 
+        "abbr": "TX", 
+        "name": "Texas"
+    }, 
+    {
+        "fips": "049", 
+        "abbr": "UT", 
+        "name": "Utah"
+    }, 
+    {
+        "fips": "051", 
+        "abbr": "VA", 
+        "name": "Virginia"
+    }, 
+    {
+        "fips": "078", 
+        "abbr": "VI", 
+        "name": "Virgin Islands"
+    }, 
+    {
+        "fips": "050", 
+        "abbr": "VT", 
+        "name": "Vermont"
+    }, 
+    {
+        "fips": "053", 
+        "abbr": "WA", 
+        "name": "Washington"
+    }, 
+    {
+        "fips": "055", 
+        "abbr": "WI", 
+        "name": "Wisconsin"
+    }, 
+    {
+        "fips": "054", 
+        "abbr": "WV", 
+        "name": "West Virginia"
+    }, 
+    {
+        "fips": "056", 
+        "abbr": "WY", 
+        "name": "Wyoming"
+    }
+]
