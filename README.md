@@ -20,6 +20,14 @@ All are easily installed via pip. GEOS is available through many package manager
 
 #Usage#
 
-$ python parse.py
+`$ python parse.py`
+
+This will output an `alerts.json` file in the `output` directory.
 
 According to NOAA, the alerts feed is updated no more than every five minutes, so keep that in mind when making requests.
+
+#Enhancements/To Do#
+* Make the output location customizable via command-line.
+* Optionally gzip the output file.
+* Cache the response for URL requests that have already been made (Each alert in the feed requires an outbound URL request to fetch the extended CAP alert data)
+
