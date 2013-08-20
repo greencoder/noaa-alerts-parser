@@ -20,8 +20,6 @@ CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 if __name__ == "__main__":
 
-    print "Getting alerts at %s" % datetime.datetime.now(pytz.utc)
-
     # Load states and counties
     states_filepath = os.path.join(CUR_DIR, 'data/states.json')
     f = codecs.open(states_filepath, 'r', 'utf-8')
@@ -42,6 +40,13 @@ if __name__ == "__main__":
     counties_dict = {}
     for county in counties_list:
         counties_dict[county['fips']] = county
+
+    def log(message):
+        now_utc = datetime.datetime.now(pytz.utc)
+        log_filepath = os.path.join(CUR_DIR, 'output/log.txt')
+        f = codecs.open(log_filepath, 'a', 'utf-8')
+        f.write("%s\t%s\n" % (now_utc, message))
+        f.close()
 
     def get_element_text(element, name, default_value=''):
         el = element.find(name)
@@ -76,7 +81,7 @@ if __name__ == "__main__":
     tree = ET.fromstring(request_data)
     entries_list = tree.findall(ATOM_NS + 'entry')
     
-    print "%d entries found." % len(entries_list)
+    log("Requesting alerts feed. %d entries found." % len(entries_list))
 
     for entry_el in entries_list:
 
@@ -181,7 +186,7 @@ if __name__ == "__main__":
                 if county not in alert['counties_list']:
                     alert['counties_list'].append(county)
             except KeyError:
-                print "Could Not Find County FIPS: %s" % fips
+                log("Could Not Find County FIPS: %s" % fips)
 
         # Before we call out to NOAA for additional info, see if we already have this information
         # from the last time we saved the file. This can save us lots of URL requests and time.
@@ -201,13 +206,13 @@ if __name__ == "__main__":
         # If we didn't find the current alert from the data in our last run, we need 
         # to call the CAP URL and get it.
         if not matched_last_record:
-            print "Requesting CAP URL for UUID: %s" % alert['uuid']
+            log("Requesting CAP URL for UUID: %s" % alert['uuid'])
             try:
                 f = urllib2.urlopen(alert['link'], timeout=10)
                 request_data = f.read()
                 cap_tree = ET.fromstring(request_data)
             except urllib2.URLError, error:
-                print "Error opening CAP URL. %s" % error
+                log("Error opening CAP URL. %s" % error)
                 # We don't want to stop dead, so create an empty XML element
                 # so our next few lines of code will execute and return blank.
                 cap_tree = ET.Element('')
