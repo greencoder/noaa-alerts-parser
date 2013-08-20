@@ -20,6 +20,8 @@ CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 if __name__ == "__main__":
 
+    print "Getting alerts at %s" % datetime.datetime.now(pytz.utc)
+
     # Load states and counties
     states_filepath = os.path.join(CUR_DIR, 'data/states.json')
     f = codecs.open(states_filepath, 'r', 'utf-8')
