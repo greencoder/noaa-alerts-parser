@@ -29,5 +29,3 @@ According to NOAA, the alerts feed is updated no more than every five minutes, s
 #Enhancements/To Do#
 * Make the output location customizable via command-line.
 * Optionally gzip the output file.
-* Cache the response for URL requests that have already been made (Each alert in the feed requires an outbound URL request to fetch the extended CAP alert data)
-

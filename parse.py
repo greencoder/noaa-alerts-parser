@@ -4,6 +4,8 @@ import time
 import pytz
 import urllib2
 import json
+import os
+import hashlib
 
 from jinja2 import Template, Environment, FileSystemLoader
 from xml.etree import ElementTree as ET
@@ -14,15 +16,19 @@ NOAA_URL = "http://alerts.weather.gov/cap/us.php?x=1"
 ATOM_NS = "{http://www.w3.org/2005/Atom}"
 CAP_NS = "{urn:oasis:names:tc:emergency:cap:1.1}"
 
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+
 if __name__ == "__main__":
 
     # Load states and counties
-    f = codecs.open('data/states.json', 'r', 'utf-8')
+    states_filepath = os.path.join(CUR_DIR, 'data/states.json')
+    f = codecs.open(states_filepath, 'r', 'utf-8')
     contents = f.read()
     states_list = json.loads(contents)
     f.close()
 
-    f = codecs.open('data/counties.json', 'r', 'utf-8')
+    counties_filepath = os.path.join(CUR_DIR, 'data/counties.json')
+    f = codecs.open(counties_filepath, 'r', 'utf-8')
     contents = f.read()
     counties_list = json.loads(contents)
     f.close()
@@ -49,6 +55,18 @@ if __name__ == "__main__":
         else:
             return default_value
 
+    # Try to load the last run of the alerts so we can skip having to 
+    # call out for every URL when we don't have to.
+    try:
+        json_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
+        f = codecs.open(json_filepath, 'r', 'utf-8')
+        contents = f.read()
+        f.close()
+        previous_alerts_list = json.loads(contents)['alerts']
+    except IOError:
+        previous_alerts_list = []
+
+    # Load up the new alerts
     alerts_list = []
 
     f = urllib2.urlopen(NOAA_URL, timeout=5)
@@ -80,6 +98,11 @@ if __name__ == "__main__":
         alert['certainty'] = get_element_text(entry_el, CAP_NS + 'certainty')
         alert['area_desc'] = get_element_text(entry_el, CAP_NS + 'areaDesc')
         alert['polygon'] = get_element_text(entry_el, CAP_NS + 'polygon')
+
+        # Create a unique hash from the ID
+        h = hashlib.new('ripemd160')
+        h.update(alert['id'])
+        alert['uuid'] = h.hexdigest()
 
         # Polygons come formatted as a string, but we transform it into 
         # a valid GeoJSON coordinate array.
@@ -158,27 +181,46 @@ if __name__ == "__main__":
             except KeyError:
                 print "Could Not Find County FIPS: %s" % fips
 
-        # Go out to the CAP alert and get the extended info we need
-        try:
-            f = urllib2.urlopen(alert['link'], timeout=10)
-            request_data = f.read()
-            cap_tree = ET.fromstring(request_data)
-        except urllib2.URLError, error:
-            print "Error opening URL: %s" % alert['link']
-            print error
-            sys.exit()
+        # Before we call out to NOAA for additional info, see if we already have this information
+        # from the last time we saved the file. This can save us lots of URL requests and time.
+        matched_last_record = False
 
-        alert['sender_name'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'senderName')
-        alert['instruction'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'instruction')
-        alert['description'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'description')
-        alert['note'] = get_element_text(cap_tree, CAP_NS + 'note')
+        for old_alert in previous_alerts_list:
+            if old_alert['uuid'] == alert['uuid']:
+                if old_alert['updated'] == str(alert['updated_utc']):
+                    matched_last_record = True
+                    # If it hasn't been updated, use these values
+                    alert['sender'] = old_alert['sender']
+                    alert['instruction'] = old_alert['instruction']
+                    alert['description'] = old_alert['description']
+                    alert['note'] = old_alert['note']
+                break
+
+        # If we didn't find the current alert from the data in our last run, we need 
+        # to call the CAP URL and get it.
+        if not matched_last_record:
+            print "Requesting CAP URL for UUID: %s" % alert['uuid']
+            try:
+                f = urllib2.urlopen(alert['link'], timeout=10)
+                request_data = f.read()
+                cap_tree = ET.fromstring(request_data)
+            except urllib2.URLError, error:
+                print "Error opening CAP URL. %s" % error
+                # We don't want to stop dead, so create an empty XML element
+                # so our next few lines of code will execute and return blank.
+                cap_tree = ET.Element('')
+
+            alert['sender'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'senderName')
+            alert['instruction'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'instruction')
+            alert['description'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'description')
+            alert['note'] = get_element_text(cap_tree, CAP_NS + 'note')
 
         alerts_list.append(alert)
 
 # Write out the alerts
 # Prepare to render the alerts
 env = Environment()
-env.loader = FileSystemLoader('templates')
+env.loader = FileSystemLoader(os.path.join(CUR_DIR, 'templates'))
 
 def jinja_escape_js(val):
     return json.dumps(str(val))
@@ -192,6 +234,7 @@ now_utc_ts = int(time.mktime(datetime.datetime.now().utctimetuple()))
 output = template.render(alerts=alerts_list, written_at_utc=now_utc, 
     written_at_utc_ts=now_utc_ts)
 
-f = codecs.open('output/alerts.json', 'w', 'utf-8')
+output_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
+f = codecs.open(output_filepath, 'w', 'utf-8')
 f.write(output)
 f.close()

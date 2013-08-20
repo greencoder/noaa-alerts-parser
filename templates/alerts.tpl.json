@@ -6,8 +6,9 @@
 		{
 			"title": {{ alert.title|escape_json }},
 			"link": {{ alert.link|escape_json }},
+			"uuid": {{ alert.uuid|escape_json }},
 			"author": {{ alert.author|escape_json }},
-			"sender": {{ alert.sender_name|escape_json }},
+			"sender": {{ alert.sender|escape_json }},
 			"status": {{ alert.status|escape_json }},
 			"message_type": {{ alert.msg_type|escape_json }},
 			"event": {{ alert.event|escape_json }},
