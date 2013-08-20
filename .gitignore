@@ -1,5 +1,5 @@
 *.pyc
 venv
 output/*.json
-output/*.log
+output/*.txt
 

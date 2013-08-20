@@ -1,5 +1,5 @@
 {
-	"created_utc": {{ written_at_utc|escape_json }},
+	"created_utc": {{ written_at_utc.isoformat()|escape_json }},
 	"created_utc_timestamp": {{ written_at_utc_ts }},
 	"alerts": [
 	{% for alert in alerts %}
@@ -17,10 +17,10 @@
 			"severity": {{ alert.severity|escape_json }},
 			"certainty": {{ alert.certainty|escape_json }},
 			"timezone": {{ alert.timezone_abbr|escape_json }},
-			"updated": {{ alert.updated_utc|escape_json }},
-			"published": {{ alert.published_utc|escape_json }},
-			"effective": {{ alert.effective_utc|escape_json }},
-			"expires": {{ alert.expires_utc|escape_json }},
+			"updated": {{ alert.updated_utc.isoformat()|escape_json }},
+			"published": {{ alert.published_utc.isoformat()|escape_json }},
+			"effective": {{ alert.effective_utc.isoformat()|escape_json }},
+			"expires": {{ alert.expires_utc.isoformat()|escape_json }},
 			"counties": [{% for county in alert.counties_list %} 
 				{
 					"name": "{{ county.name }}",

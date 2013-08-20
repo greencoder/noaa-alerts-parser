@@ -194,7 +194,7 @@ if __name__ == "__main__":
 
         for old_alert in previous_alerts_list:
             if old_alert['uuid'] == alert['uuid']:
-                if old_alert['updated'] == str(alert['updated_utc']):
+                if old_alert['updated'] == alert['updated_utc'].isoformat():
                     matched_last_record = True
                     # If it hasn't been updated, use these values
                     alert['sender'] = old_alert['sender']
