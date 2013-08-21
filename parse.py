@@ -41,6 +41,13 @@ if __name__ == "__main__":
     for county in counties_list:
         counties_dict[county['fips']] = county
 
+    # Load master list of alert types
+    events_filepath = os.path.join(CUR_DIR, 'data/events.json')
+    f = codecs.open(events_filepath, 'r', 'utf-8')
+    contents = f.read()
+    events_list = json.loads(contents)
+    f.close()
+
     def log(message):
         now_utc = datetime.datetime.now(pytz.utc)
         log_filepath = os.path.join(CUR_DIR, 'output/log.txt')
@@ -105,6 +112,10 @@ if __name__ == "__main__":
         alert['certainty'] = get_element_text(entry_el, CAP_NS + 'certainty')
         alert['area_desc'] = get_element_text(entry_el, CAP_NS + 'areaDesc')
         alert['polygon'] = get_element_text(entry_el, CAP_NS + 'polygon')
+
+        # Add the event to the master list
+        if alert['event'] not in events_list:
+            events_list.append(alert['event'])
 
         # Create a unique hash from the ID
         h = hashlib.new('ripemd160')
@@ -244,4 +255,10 @@ output = template.render(alerts=alerts_list, written_at_utc=now_utc,
 output_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
 f = codecs.open(output_filepath, 'w', 'utf-8')
 f.write(output)
+f.close()
+
+# Write out the master events list
+events_filepath = os.path.join(CUR_DIR, 'data/events.json')
+f = codecs.open(events_filepath, 'w', 'utf-8')
+f.write(json.dumps(events_list, indent=4))
 f.close()
