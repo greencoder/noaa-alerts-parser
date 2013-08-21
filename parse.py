@@ -257,7 +257,8 @@ f = codecs.open(output_filepath, 'w', 'utf-8')
 f.write(output)
 f.close()
 
-# Write out the master events list
+# Sort and write out the master events list
+events_list.sort()
 events_filepath = os.path.join(CUR_DIR, 'data/events.json')
 f = codecs.open(events_filepath, 'w', 'utf-8')
 f.write(json.dumps(events_list, indent=4))
