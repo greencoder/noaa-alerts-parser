@@ -2,4 +2,5 @@
 venv
 output/*.json
 output/*.txt
+data/metadata.json
 
