@@ -1,4 +1,5 @@
 *.pyc
+*.sh
 venv
 output/*.json
 output/*.txt

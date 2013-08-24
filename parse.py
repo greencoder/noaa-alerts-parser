@@ -41,19 +41,6 @@ if __name__ == "__main__":
     for county in counties_list:
         counties_dict[county['fips']] = county
 
-    # Load master list of metadata
-    metadata_filepath = os.path.join(CUR_DIR, 'data/metadata.json')
-    if os.path.exists(metadata_filepath):
-        f = codecs.open(metadata_filepath, 'r', 'utf-8')
-        contents = f.read()
-        data = json.loads(contents)
-        events_list = data['events']
-        severities_list = data['severities']
-        f.close()
-    else:
-        events_list = []
-        severities_list = []
-
     def log(message):
         now_utc = datetime.datetime.now(pytz.utc)
         log_filepath = os.path.join(CUR_DIR, 'output/log.txt')
@@ -118,14 +105,6 @@ if __name__ == "__main__":
         alert['certainty'] = get_element_text(entry_el, CAP_NS + 'certainty')
         alert['area_desc'] = get_element_text(entry_el, CAP_NS + 'areaDesc')
         alert['polygon'] = get_element_text(entry_el, CAP_NS + 'polygon')
-
-        # Add the events to to the metadata list
-        if alert['event'] not in events_list:
-            events_list.append(alert['event'])
-        
-        # Add the severities to the metadata list
-        if alert['severity'] not in severities_list:
-            severities_list.append(alert['severity'])
 
         # Create a unique hash from the ID
         h = hashlib.new('ripemd160')
@@ -265,14 +244,4 @@ output = template.render(alerts=alerts_list, written_at_utc=now_utc,
 output_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
 f = codecs.open(output_filepath, 'w', 'utf-8')
 f.write(output)
-f.close()
-
-# Sort and write out the metadata file
-events_list.sort()
-severities_list.sort()
-output_dict = {'events': events_list, 'severities': severities_list}
-
-events_filepath = os.path.join(CUR_DIR, 'data/metadata.json')
-f = codecs.open(events_filepath, 'w', 'utf-8')
-f.write(json.dumps(output_dict, indent=4))
 f.close()
