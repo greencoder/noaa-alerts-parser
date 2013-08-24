@@ -29,6 +29,7 @@ According to NOAA, the alerts feed is updated no more than every five minutes, s
 #Optional Files#
 
 Two optional files are included in the project:
+
 1. `counts.py` creates a file with the number of alerts by state, U.S. region, severity, and event.
 2. `metadata.py` appends to a file that keeps track of all the possible events and severities. Useful if you want a master list of all events and severities.
 
