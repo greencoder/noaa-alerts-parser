@@ -1,6 +1,8 @@
 import os
 import json
 import codecs
+import datetime
+import pytz
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -44,7 +46,11 @@ if __name__ == "__main__":
 # Sort and write out the metadata file
 events_list.sort()
 severities_list.sort()
-output_dict = {'events': events_list, 'severities': severities_list}
+output_dict = {
+    'updated': datetime.datetime.now(pytz.utc).isoformat(),
+    'events': events_list, 
+    'severities': severities_list,
+}
 
 metadata_filepath = os.path.join(CUR_DIR, 'data/metadata.json')
 f = codecs.open(metadata_filepath, 'w', 'utf-8')

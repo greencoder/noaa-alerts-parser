@@ -1,6 +1,8 @@
 import os
 import json
 import codecs
+import datetime
+import pytz
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -65,6 +67,7 @@ for state in states.keys():
         regions[region] = alert_count
 
 output_dict = {
+    'updated': datetime.datetime.now(pytz.utc).isoformat(),
     'count': len(alerts), 
     'events': events, 
     'severities': severities, 
