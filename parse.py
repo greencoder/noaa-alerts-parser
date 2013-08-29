@@ -48,6 +48,12 @@ if __name__ == "__main__":
         f.write("%s\t%s\n" % (now_utc, message))
         f.close()
 
+    def log_missing_fips(fips_code):
+        log_filepath = os.path.join(CUR_DIR, 'output/missing_fips.txt')
+        f = codecs.open(log_filepath, 'a', 'utf-8')
+        f.write("%s\n" % fips_code)
+        f.close()
+
     def get_element_text(element, name, default_value=''):
         el = element.find(name)
         if el is not None and el.text:
@@ -187,6 +193,7 @@ if __name__ == "__main__":
                     alert['counties_list'].append(county)
             except KeyError:
                 log("Could Not Find County FIPS: %s" % fips)
+                log_missing_fips(fips)
 
         # Before we call out to NOAA for additional info, see if we already have this information
         # from the last time we saved the file. This can save us lots of URL requests and time.
