@@ -41871,5 +41871,44 @@
         ], 
         "lat": 34.8572198, 
         "lng": -116.1811967
+    },
+    {
+        "name": "Prince of Wales-Outer Ketchika Census Area", 
+        "state": "AK", 
+        "fips": "002201", 
+        "bbox": [
+            -134.1920, 
+            54.6320, 
+            -129.9795, 
+            56.4038
+        ], 
+        "lat": 55.5179, 
+        "lng": -132.0858
+    }, 
+    {
+        "name": "Skagway-Hoonah-Angoon Census Area", 
+        "state": "AK", 
+        "fips": "002232", 
+        "bbox": [
+            -138.0286, 
+            56.8640, 
+            -132.3680, 
+            59.2653
+        ], 
+        "lat": 58.0646, 
+        "lng": -135.1983
+    }, 
+    {
+        "name": "Wrangell-Petersburg Census Area", 
+        "state": "AK", 
+        "fips": "002280", 
+        "bbox": [
+            -134.6667, 
+            55.6450, 
+            -130.9874, 
+            57.4269
+        ], 
+        "lat": 56.5359, 
+        "lng": -132.8271
     }
 ]
