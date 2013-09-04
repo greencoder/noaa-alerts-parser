@@ -6,6 +6,7 @@ import urllib2
 import json
 import os
 import hashlib
+import sys
 
 from jinja2 import Template, Environment, FileSystemLoader
 from xml.etree import ElementTree as ET
@@ -173,11 +174,12 @@ if __name__ == "__main__":
         if alert['polygon']:
             verticies_list = []
             for item in [v.split(",") for v in alert['polygon'].split(" ")]:
-                verticies_list.append((float(item[0]), float(item[1])))
+                # NWS coordinates come in lat,long - we need long,lat
+                verticies_list.append((float(item[1]), float(item[0])))
             alert_polygon = Polygon(verticies_list)
             for county in counties_list:
-                b = county['bbox']
-                county_polygon = box(float(b[1]), float(b[0]), float(b[3]), float(b[2]))
+                bbox = county['bbox']
+                county_polygon = box(bbox[0], bbox[1], bbox[2], bbox[3])
                 if county_polygon.intersects(alert_polygon):
                     alert['fips_list'].append(county['fips'])
 
