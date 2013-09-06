@@ -30,9 +30,9 @@
 			],
 			"area_description": {{ alert.area_desc|escape_json }},
 			"polygon": {{ alert.formatted_polygon }},
-			"summary": {{ alert.summary|title|escape_json }},
-			"instruction": {{ alert.instruction|title|escape_json }},
-			"description": {{ alert.description|title|escape_json }},
+			"summary": {{ alert.summary|escape_json }},
+			"instruction": {{ alert.instruction|escape_json }},
+			"description": {{ alert.description|escape_json }},
 			"note": {{ alert.note|escape_json }}
 		}{% if not loop.last %},{% endif %}
 	{% endfor %}

@@ -5,46 +5,69 @@
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700|Droid+Serif:400,700,400italic,700italic' rel='stylesheet' 
 type='text/css'>
 
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+	var d = new Date(0);
+	d.setUTCSeconds({{ written_at_utc_ts }});
+	$('#time-header').append(" (" + d.toString() + ")");
+});
+
+</script>
+
 <style type="text/css">
 body {
     padding: 15px;
-    margin: 0px;
+    margin: 15px;
     font-size: 1.0em;
 }
 h1 {
     font-family: 'Droid Sans', sans-serif;
     margin: 0px;
     padding: 15px;
-    font-size: 1.6em;
+    font-size: 1.4em;
 }
 .alert-group {
     box-sizing:border-box;
     -moz-box-sizing:border-box;
     border: 3px solid #EDF3FE;
-    margin: 15px;
-    padding: 0px;
+	margin-bottom: 40px;
 }
 .alert-group > .header {
     background-color: #EDF3FE;
 }
+.alert-group > .header h1 a {
+	text-decoration: none;
+	color: #000;
+}
 .alert-group > .content {
     font-family: 'Droid Serif', serif;
-    padding: 15px;
     border-top: 3px solid #EDF3FE;
     line-height: 1.5em;
+	padding: 15px;
 }
 .alert-toc {
     box-sizing:border-box;
     -moz-box-sizing:border-box;
-    padding: 15px;
     font-family: 'Droid Serif', serif;
     line-height: 1.5em;
     margin-left: 10px;
     color: #000;
+	padding: 0px;
+	margin: 0px;
+	margin-bottom: 40px;
+}
+.alert-toc .big {
+	font-size: 1.3em;
 }
 .alert-toc a, 
 .alert-toc a.visited {
     text-decoration: none;
+	margin-left: 15px;
+}
+#time-header {
+	margin: 0px;
 }
 </style>
 
@@ -52,10 +75,14 @@ h1 {
 
 <body>
 
+<p id="time-header">Updated at: {{ written_at_utc.isoformat() }}</p>
+
+<a name="top"></a>
+
 <div class="alert-toc">
-    <p><strong>Jump to section:</strong></p>
+    <p class="big"><strong>Jump to section:</strong></p>
 {% for group in alerts|groupby('event') %}
-    <a href="#{{ group.grouper }}">{{ group.grouper }}</a><br/>
+    	<a href="#{{ group.grouper }}">{{ group.grouper }}</a><br/>
 {% endfor %}
 </div>
     
@@ -63,7 +90,7 @@ h1 {
 <div class="alert-group">
     <div class="header">
         <a name="{{ group.grouper }}"></a>
-        <h1>{{ group.grouper }}</h1>
+        <h1><a href="#top">{{ group.grouper }}</a></h1>
     </div>
     {% for alert in group.list %}
     <div class="content">
@@ -75,19 +102,20 @@ h1 {
 
         {% if alert.description %}
         <p>
-            <strong>Description:</strong> {{ alert.description }}
+            <strong>Description:</strong><br/>
+			{{ alert.description }}
         </p>
         {% endif %}
 
         {% if alert.instruction %}
         <p>
-            <strong>Instruction:</strong> {{ alert.instruction }}
+            <strong>Instruction:</strong><br/>
+			{{ alert.instruction }}
         </p>
         {% endif %}
 
-
         <p>
-            <strong>Counties:</strong>
+            <strong>Counties:</strong><br/>
         {% for county in alert.counties %}
             {{ county.name }}, {{ county.state }}{% if not loop.last %},{% endif %}
         {% endfor %}

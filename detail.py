@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import codecs
+import time
 import datetime
 import pytz
 from operator import itemgetter
@@ -23,9 +24,11 @@ env = Environment()
 env.loader = FileSystemLoader(os.path.join(CUR_DIR, 'templates'))
 
 now_utc = datetime.datetime.now(pytz.utc).astimezone(pytz.utc)
+now_utc_ts = int(time.mktime(datetime.datetime.now().utctimetuple()))
 
 template = env.get_template('detail.tpl.html')
-output = template.render(alerts=alerts, written_at_utc=now_utc)
+output = template.render(alerts=alerts, written_at_utc=now_utc, 
+    written_at_utc_ts=now_utc_ts)
 
 output_filepath = os.path.join(CUR_DIR, 'output/detail.html')
 f = codecs.open(output_filepath, 'w', 'utf-8')
