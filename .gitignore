@@ -3,5 +3,7 @@
 venv
 output/*.json
 output/*.txt
+output/*.html
 data/metadata.json
+tools/*
 
