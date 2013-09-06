@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700|Droid+Serif:400,700,400italic,700italic' rel='stylesheet' 
+type='text/css'>
+
+<style type="text/css">
+body {
+    padding: 15px;
+    margin: 0px;
+    font-size: 1.0em;
+}
+h1 {
+    font-family: 'Droid Sans', sans-serif;
+    margin: 0px;
+    padding: 15px;
+    font-size: 1.6em;
+}
+.alert-group {
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    border: 3px solid #EDF3FE;
+    margin: 15px;
+    padding: 0px;
+}
+.alert-group > .header {
+    background-color: #EDF3FE;
+}
+.alert-group > .content {
+    font-family: 'Droid Serif', serif;
+    padding: 15px;
+    border-top: 3px solid #EDF3FE;
+    line-height: 1.5em;
+}
+.alert-toc {
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    padding: 15px;
+    font-family: 'Droid Serif', serif;
+    line-height: 1.5em;
+    margin-left: 10px;
+    color: #000;
+}
+.alert-toc a, 
+.alert-toc a.visited {
+    text-decoration: none;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="alert-toc">
+    <p><strong>Jump to section:</strong></p>
+{% for group in alerts|groupby('event') %}
+    <a href="#{{ group.grouper }}">{{ group.grouper }}</a><br/>
+{% endfor %}
+</div>
+    
+{% for group in alerts|groupby('event') %}
+<div class="alert-group">
+    <div class="header">
+        <a name="{{ group.grouper }}"></a>
+        <h1>{{ group.grouper }}</h1>
+    </div>
+    {% for alert in group.list %}
+    <div class="content">
+
+        <p>
+            <strong>By:</strong> {{ alert.sender }}<br/>
+            <strong>Severity:</strong> {{ alert.severity }}<br/>
+        </p>
+
+        {% if alert.description %}
+        <p>
+            <strong>Description:</strong> {{ alert.description }}
+        </p>
+        {% endif %}
+
+        {% if alert.instruction %}
+        <p>
+            <strong>Instruction:</strong> {{ alert.instruction }}
+        </p>
+        {% endif %}
+
+
+        <p>
+            <strong>Counties:</strong>
+        {% for county in alert.counties %}
+            {{ county.name }}, {{ county.state }}{% if not loop.last %},{% endif %}
+        {% endfor %}
+        </p>
+
+    </div>
+    {% endfor %}
+</div>
+{% endfor %}
+
+</body>
+</html>
