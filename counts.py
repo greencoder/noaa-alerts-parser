@@ -9,12 +9,12 @@ CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 regions = {
     'Northeast': ['ME','NH','VT','MA','RI','CT'],
     'Mid-Atlantic': ['NY','PA','MD','DE','DC','NJ','WV','VA'],
-    'Southeast': ['NC','SC','TN','AR','LA','MS','FL','GA','AL'],
+    'Southeast': ['NC','SC','TN','AR','LA','MS','FL','GA','AL','PR','VI'],
     'Midwest': ['WI','MI','IL','IN','OH','MO','ND','SD','NE','KS','MN','IA','KY'],
     'Southwest': ['OK','TX','NM','AZ','UT','CO'],
     'West': ['CA','NV'],
     'Northwest': ['WY','MT','ID','OR','WA'],
-    'Pacific': ['AK','HI'],
+    'Pacific': ['AK','HI','AS','GU'],
 }
 
 states_dict = {}
