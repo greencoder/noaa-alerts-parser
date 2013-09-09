@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700|Droid+Serif:400,700,400italic,700italic' rel='stylesheet' 
+type='text/css'>
+
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+	var d = new Date(0);
+	d.setUTCSeconds({{ written_at_utc_ts }});
+	$('#time-header').append(" (" + d.toString() + ")");
+});
+
+</script>
+
+<style type="text/css">
+body {
+    padding: 15px;
+    margin: 15px;
+    font-size: 1.0em;
+}
+h1 {
+    font-family: 'Droid Sans', sans-serif;
+    margin: 0px;
+    padding: 15px;
+    font-size: 1.4em;
+}
+.alert-group {
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    border: 3px solid #EDF3FE;
+	margin-bottom: 40px;
+}
+.alert-group > .header {
+    background-color: #EDF3FE;
+}
+.alert-group > .header h1 a {
+	text-decoration: none;
+	color: #000;
+}
+.alert-group > .content {
+    font-family: 'Droid Serif', serif;
+    border-top: 3px solid #EDF3FE;
+    line-height: 1.5em;
+	padding: 15px;
+}
+.alert-toc {
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    font-family: 'Droid Serif', serif;
+    line-height: 1.5em;
+    margin-left: 10px;
+    color: #000;
+	padding: 0px;
+	margin: 0px;
+	margin-bottom: 40px;
+}
+.alert-toc .big {
+	font-size: 1.3em;
+}
+.alert-toc a, 
+.alert-toc a.visited {
+    text-decoration: none;
+	margin-left: 15px;
+}
+#time-header {
+	margin: 0px;
+}
+</style>
+
+</head>
+
+<body>
+
+<a name="top"></a>
+
+<p id="time-header">Updated at: {{ written_at_utc.isoformat() }}</p>
+
+<div class="alert-toc">
+    <p class="big"><strong>Jump to state:</strong></p>
+    {% for state, alerts in states.iteritems() %}
+    	<a href="?{{ written_at_utc_ts }}#{{ state }}">{{ state }} ({{ alerts|length }})</a><br/>
+    {% endfor %}
+</div>
+
+{% for state, alerts in states.iteritems() %}
+<div class="alert-group">
+    <div class="header">
+        <a name="{{ state }}"></a>
+        <h1><a href="#top">{{ state }}</a></h1>
+    </div>
+    {% for alert in alerts %}
+    <div class="content">
+
+        <p>
+            <strong>By:</strong> {{ alert.sender }}<br/>
+            <strong>Severity:</strong> {{ alert.severity }}<br/>
+        </p>
+
+        {% if alert.description %}
+        <p>
+            <strong>Description:</strong><br/>
+			{{ alert.description }}
+        </p>
+        {% endif %}
+
+        {% if alert.instruction %}
+        <p>
+            <strong>Instruction:</strong><br/>
+			{{ alert.instruction }}
+        </p>
+        {% endif %}
+
+        <p>
+            <strong>Counties:</strong><br/>
+        {% for county in alert.counties %}
+            {{ county.name }}, {{ county.state }}{% if not loop.last %},{% endif %}
+        {% endfor %}
+        </p>
+
+    </div>
+    {% endfor %}
+</div>
+{% endfor %}
+
+</body>
+</html>
