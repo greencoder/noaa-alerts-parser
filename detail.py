@@ -4,6 +4,7 @@ import json
 import codecs
 import time
 import datetime
+import random
 import pytz
 from operator import itemgetter
 
@@ -22,6 +23,12 @@ alerts = alert_data['alerts']
 # Prepare to render the alerts
 env = Environment()
 env.loader = FileSystemLoader(os.path.join(CUR_DIR, 'templates'))
+
+def random_int(val):
+    # val is not used
+    return random.randrange(0, 9999999999)
+
+env.filters['random_int'] = random_int
 
 now_utc = datetime.datetime.now(pytz.utc).astimezone(pytz.utc)
 now_utc_ts = int(time.mktime(datetime.datetime.now().utctimetuple()))
