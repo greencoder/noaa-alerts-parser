@@ -189,6 +189,11 @@ if __name__ == "__main__":
 
         # Loop through all fips and get the associated counties
         for fips in alert['fips_list']:
+            # For some reason, 'ant' shows up occasionally in the list 
+            # of county FIPS codes. Ignore it.
+            if fips == 'ant':
+                log("FIPS6 list includes 'ant' entry (%s). Skipping." % ", ".join(alert['fips_list']))
+                continue
             try:
                 county = counties_dict[fips]
                 if county not in alert['counties_list']:
