@@ -273,5 +273,30 @@
         "fips": "056", 
         "abbr": "WY", 
         "name": "Wyoming"
+    },
+    {
+        "fips": "069",
+        "abbr": "MP",
+        "name": "Northern Marina Islands"
+    },
+    {
+        "fips": "064",
+        "abbr": "FM",
+        "name": "Federated States of Micronesia"
+    },
+    {
+        "fips": "068",
+        "abbr": "MH",
+        "name": "Marshall Islands"
+    },
+    {
+        "fips": "070",
+        "abbr": "PW",
+        "name": "Palau"
+    },
+    {
+        "fips": "074",
+        "abbr": "UM",
+        "name": "U.S. Minor Outlying Islands"
     }
 ]

@@ -96,7 +96,7 @@ h1 {
     <div class="content">
 
         <p>
-            <strong>By:</strong> {{ alert.sender }}<br/>
+            <strong>By:</strong> {{ alert.sender|default("None") }}<br/>
             <strong>Severity:</strong> {{ alert.severity }}<br/>
         </p>
 
@@ -116,6 +116,7 @@ h1 {
 
         <p>
             <strong>Counties:</strong><br/>
+        {% if not alert.counties %}None{% endif %}
         {% for county in alert.counties %}
             {{ county.name }}, {{ county.state }}{% if not loop.last %},{% endif %}
         {% endfor %}

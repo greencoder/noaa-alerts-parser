@@ -1,9 +1,12 @@
+.DS_Store
+temp/*
 *.pyc
 *.sh
 venv
 output/*.json
 output/*.txt
 output/*.html
+output/*.gz
 data/metadata.json
 tools/*
 

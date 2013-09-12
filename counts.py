@@ -14,7 +14,7 @@ regions = {
     'Southwest': ['OK','TX','NM','AZ','UT','CO'],
     'West': ['CA','NV'],
     'Northwest': ['WY','MT','ID','OR','WA'],
-    'Pacific': ['AK','HI','AS','GU'],
+    'Pacific': ['AK','HI','AS','GU','MP','UM','PW','MH','FM'],
 }
 
 states_dict = {}
