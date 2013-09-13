@@ -61,11 +61,12 @@ h1 {
 .alert-toc .big {
 	font-size: 1.3em;
 }
-.alert-toc a, 
-.alert-toc a.visited {
+.alert-toc a.toc, 
+.alert-toc a.visited.toc {
     text-decoration: none;
 	margin-left: 15px;
 }
+
 #time-header {
 	margin: 0px;
 }
@@ -80,10 +81,10 @@ h1 {
 <p id="time-header">Updated at: {{ written_at_utc.isoformat() }}</p>
 
 <div class="alert-toc">
-    <p>Number of alerts: {{ alerts_count }}</p>
+    <p>Number of alerts: {{ alerts_count }} | <a href="events.html">View Alerts by Type</a></p>
     <p class="big"><strong>Jump to state:</strong></p>
     {% for state, alerts in states.items()|sort %}
-    	<a href="?{{ written_at_utc_ts }}#{{ state }}">{{ state }} ({{ alerts|length }})</a><br/>
+    	<a class="toc" href="?{{ written_at_utc_ts }}#{{ state }}">{{ state }} ({{ alerts|length }})</a><br/>
     {% endfor %}
 </div>
 

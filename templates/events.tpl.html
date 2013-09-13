@@ -61,8 +61,8 @@ h1 {
 .alert-toc .big {
 	font-size: 1.3em;
 }
-.alert-toc a, 
-.alert-toc a.visited {
+.alert-toc a.toc, 
+.alert-toc a.visited.toc {
     text-decoration: none;
 	margin-left: 15px;
 }
@@ -80,10 +80,10 @@ h1 {
 <p id="time-header">Updated at: {{ written_at_utc.isoformat() }}</p>
 
 <div class="alert-toc">
-    <p>Number of alerts: {{ alerts|length}}</p>
+    <p>Number of alerts: {{ alerts|length}} | <a href="states.html">View Alerts by State</a></p>
     <p class="big"><strong>Jump to section:</strong></p>
 {% for group in alerts|groupby('event') %}
-    	<a href="?{{ written_at_utc_ts }}#{{ group.grouper }}">{{ group.grouper }} ({{ group.list|length }})</a><br/>
+    	<a class="toc" href="?{{ written_at_utc_ts }}#{{ group.grouper }}">{{ group.grouper }} ({{ group.list|length }})</a><br/>
 {% endfor %}
 </div>
     
