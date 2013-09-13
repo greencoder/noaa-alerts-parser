@@ -59,7 +59,7 @@ now_utc_ts = int(time.mktime(datetime.datetime.now().utctimetuple()))
 
 template = env.get_template('states.tpl.html')
 output = template.render(states=alerts_by_state, written_at_utc=now_utc, 
-    written_at_utc_ts=now_utc_ts)
+    written_at_utc_ts=now_utc_ts, alerts_count=len(alerts))
 
 output_filepath = os.path.join(CUR_DIR, 'output/states.html')
 f = codecs.open(output_filepath, 'w', 'utf-8')

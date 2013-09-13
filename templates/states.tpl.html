@@ -80,7 +80,7 @@ h1 {
 <p id="time-header">Updated at: {{ written_at_utc.isoformat() }}</p>
 
 <div class="alert-toc">
-    <p>Number of alerts: {{ alerts|length}}</p>
+    <p>Number of alerts: {{ alerts_count }}</p>
     <p class="big"><strong>Jump to state:</strong></p>
     {% for state, alerts in states.items()|sort %}
     	<a href="?{{ written_at_utc_ts }}#{{ state }}">{{ state }} ({{ alerts|length }})</a><br/>
