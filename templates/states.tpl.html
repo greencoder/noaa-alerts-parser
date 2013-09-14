@@ -97,6 +97,8 @@ h1 {
     {% for alert in alerts %}
     <div class="content">
 
+        <p><strong>{{ alert.event }}</strong></p>
+
         <p>
             <strong>By:</strong> {{ alert.sender }}<br/>
             <strong>Severity:</strong> {{ alert.severity }}<br/>
