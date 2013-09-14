@@ -41,7 +41,8 @@ if __name__ == "__main__":
             severities_list.append(severity)
         
         if event not in events_list:
-            events_list.append(event)
+            if event not in ('Test',):
+                events_list.append(event)
 
 # Sort and write out the metadata file
 events_list.sort()
