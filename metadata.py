@@ -38,7 +38,8 @@ if __name__ == "__main__":
         event = alert['event']
         
         if severity not in severities_list:
-            severities_list.append(severity)
+            if severity not in ("Unspecified", ""):
+                severities_list.append(severity)
         
         if event not in events_list:
             if event not in ('Test',):
