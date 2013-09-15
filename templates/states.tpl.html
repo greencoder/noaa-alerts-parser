@@ -101,7 +101,7 @@ h1 {
 
         <p>
             <strong>By:</strong> {{ alert.sender }}<br/>
-            <strong>Severity:</strong> {{ alert.severity }}<br/>
+            <strong>Severity:</strong> {{ alert.severity|default("Unspecified") }}<br/>
         </p>
 
         {% if alert.description %}
