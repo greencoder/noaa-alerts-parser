@@ -236,9 +236,9 @@ if __name__ == "__main__":
             alert['description'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'description')
             alert['note'] = get_element_text(cap_tree, CAP_NS + 'note')
 
-        ### Final Sanitization Step ###
+        ### Final Sanitization Step - Clean up outliers ###
 
-        if alert['severity'] == "":
+        if len(alert['severity']) == 0 or not alert['severity']:
             alert['severity'] == "Unspecified"            
 
         alerts_list.append(alert)
