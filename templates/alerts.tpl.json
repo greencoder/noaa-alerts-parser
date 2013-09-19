@@ -21,6 +21,7 @@
 			"published": {{ alert.published_utc.isoformat()|escape_json }},
 			"effective": {{ alert.effective_utc.isoformat()|escape_json }},
 			"expires": {{ alert.expires_utc.isoformat()|escape_json }},
+			"region": {{ alert.region|escape_json }},
 			"counties": [{% for county in alert.counties_list %} 
 				{
 					"name": "{{ county.name }}",

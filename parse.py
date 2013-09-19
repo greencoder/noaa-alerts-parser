@@ -211,6 +211,7 @@ if __name__ == "__main__":
                 if old_alert['updated'] == alert['updated_utc'].isoformat():
                     matched_last_record = True
                     # If it hasn't been updated, use these values
+                    alert['region'] = old_alert['region']
                     alert['sender'] = old_alert['sender']
                     alert['instruction'] = old_alert['instruction']
                     alert['description'] = old_alert['description']
@@ -234,7 +235,11 @@ if __name__ == "__main__":
             alert['sender'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'senderName')
             alert['instruction'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'instruction')
             alert['description'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'description')
-            alert['note'] = get_element_text(cap_tree, CAP_NS + 'note')
+            alert['note'] = get_element_text(cap_tree, CAP_NS + 'note')            
+
+            # We get the region from the name that is in parenthesis in the sender value
+            # e.g. "NWS Reno (Western Nevada)"
+            alert['region'] = alert['sender'][alert['sender'].find("(")+1:alert['sender'].find(")")]
 
         ### Final Sanitization Step - Clean up outliers ###
 
