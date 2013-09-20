@@ -7,6 +7,7 @@ output/*.json
 output/*.txt
 output/*.html
 output/*.gz
+output/*.plist
 data/metadata.json
 tools/*
 
