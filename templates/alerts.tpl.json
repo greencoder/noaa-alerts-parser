@@ -26,7 +26,9 @@
 				{
 					"name": "{{ county.name }}",
 					"state": {{ county.state|escape_json }},
-					"fips": {{ county.fips|escape_json }}
+					"fips": {{ county.fips|escape_json }},
+					"lng": {{ county.lng }},
+					"lat": {{ county.lat }}
 				}{% if not loop.last %},{% endif %}{% endfor %}
 			],
 			"area_description": {{ alert.area_desc|escape_json }},
