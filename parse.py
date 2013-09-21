@@ -260,10 +260,10 @@ env.filters['escape_json'] = jinja_escape_js
 template = env.get_template('alerts.tpl.json')
 
 now_utc = datetime.datetime.now(pytz.utc).astimezone(pytz.utc)
-now_utc_ts = int(time.mktime(datetime.datetime.now().utctimetuple()))
+next_update_utc = now_utc + datetime.timedelta(minutes=5)
 
 output = template.render(alerts=alerts_list, written_at_utc=now_utc, 
-    written_at_utc_ts=now_utc_ts)
+    next_update_utc=next_update_utc)
 
 output_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
 f = codecs.open(output_filepath, 'w', 'utf-8')

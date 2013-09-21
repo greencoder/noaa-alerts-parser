@@ -1,6 +1,6 @@
 {
 	"created_utc": {{ written_at_utc.isoformat()|escape_json }},
-	"created_utc_timestamp": {{ written_at_utc_ts }},
+	"next_update_utc": {{ next_update_utc.isoformat()|escape_json }},
 	"alerts": [
 	{% for alert in alerts %}
 		{
