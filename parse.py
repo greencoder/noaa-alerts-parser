@@ -238,8 +238,11 @@ if __name__ == "__main__":
             alert['note'] = get_element_text(cap_tree, CAP_NS + 'note')            
 
             # We get the region from the name that is in parenthesis in the sender value
-            # e.g. "NWS Reno (Western Nevada)"
-            alert['region'] = alert['sender'][alert['sender'].find("(")+1:alert['sender'].find(")")]
+            # e.g. "NWS Reno (Western Nevada)" We also have to make sure the first character is 
+            # upper cased.
+            region = alert['sender'][alert['sender'].find("(")+1:alert['sender'].find(")")]
+            region = region[0].upper() + region[1:]
+            alert['region'] = region
 
         ### Final Sanitization Step - Clean up outliers ###
 
