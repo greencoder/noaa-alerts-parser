@@ -259,7 +259,8 @@ def jinja_escape_js(val):
 env.filters['escape_json'] = jinja_escape_js
 template = env.get_template('alerts.tpl.json')
 
-now_utc = datetime.datetime.now(pytz.utc).astimezone(pytz.utc)
+now = datetime.datetime.now(pytz.utc).astimezone(pytz.utc)
+now_utc = parser.parse(now.strftime("%Y-%m-%d %H:%M:%S %Z"))
 next_update_utc = now_utc + datetime.timedelta(minutes=5)
 
 output = template.render(alerts=alerts_list, written_at_utc=now_utc, 
