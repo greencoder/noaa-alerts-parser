@@ -42,6 +42,10 @@ if __name__ == "__main__":
     for county in counties_list:
         counties_dict[county['fips']] = county
 
+    state_abbrs_dict = {}
+    for state in states_list:
+        state_abbrs_dict[state['abbr']] = state
+
     def log(message):
         now_utc = datetime.datetime.now(pytz.utc)
         log_filepath = os.path.join(CUR_DIR, 'output/log.txt')
@@ -157,6 +161,7 @@ if __name__ == "__main__":
         alert['fips_list'] = []
         alert['ugc_list'] = []
         alert['counties_list'] = []
+        alert['states_list'] = []
         
         # Look for the 'geocode' element and find the FIPS and UGCs
         for item in entry_el.findall(CAP_NS + 'geocode'):
@@ -198,6 +203,11 @@ if __name__ == "__main__":
                 county = counties_dict[fips]
                 if county not in alert['counties_list']:
                     alert['counties_list'].append(county)
+                abbr = county['state']
+                state = state_abbrs_dict[abbr]
+                if state not in alert['states_list']:
+                    alert['states_list'].append(state)
+                
             except KeyError:
                 log("Could Not Find County FIPS: %s" % fips)
                 log_missing_fips(fips)
