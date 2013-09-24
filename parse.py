@@ -11,7 +11,7 @@ import sys
 from jinja2 import Template, Environment, FileSystemLoader
 from xml.etree import ElementTree as ET
 from dateutil import parser
-from shapely.geometry import box, Polygon
+from shapely.geometry import box, Polygon, Point
 
 NOAA_URL = "http://alerts.weather.gov/cap/us.php?x=1"
 ATOM_NS = "{http://www.w3.org/2005/Atom}"
@@ -57,6 +57,13 @@ if __name__ == "__main__":
         log_filepath = os.path.join(CUR_DIR, 'output/missing_fips.txt')
         f = codecs.open(log_filepath, 'a', 'utf-8')
         f.write("%s\n" % fips_code)
+        f.close()
+
+    def log_error(message):
+        now_utc = datetime.datetime.now(pytz.utc)
+        log_filepath = os.path.join(CUR_DIR, 'output/errors.txt')
+        f = codecs.open(log_filepath, 'a', 'utf-8')
+        f.write("%s\t%s\n" % (now_utc, message))
         f.close()
 
     def get_element_text(element, name, default_value=''):
@@ -176,17 +183,44 @@ if __name__ == "__main__":
         # that was not included in the FIPS list. We will turn the string 
         # into a Shapely polygon, then compare it against every county to 
         # find matches.
+        
+        # Sometimes the polygon has bad values, so we need to do some sanity
+        # checking on the values. If it contains a value of "0" or "-0", exit.
+        # If the distance between any two verticies is greater than 25 units, 
+        # exit.
+        
         if alert['polygon']:
+
             verticies_list = []
+            found_error = False
+            
             for item in [v.split(",") for v in alert['polygon'].split(" ")]:
-                # NWS coordinates come in lat,long - we need long,lat
-                verticies_list.append((float(item[1]), float(item[0])))
-            alert_polygon = Polygon(verticies_list)
-            for county in counties_list:
-                bbox = county['bbox']
-                county_polygon = box(bbox[0], bbox[1], bbox[2], bbox[3])
-                if county_polygon.intersects(alert_polygon):
-                    alert['fips_list'].append(county['fips'])
+                # Make sure bad values aren't present
+                if '0' in item or '-0' in item:
+                    log_error("A '0' or '-0' was found in polygon %s" % alert['polygon'])
+                    found_error = True
+                    break
+                else:
+                    # NWS coordinates come in lat,long - we need long,lat
+                    verticies_list.append((float(item[1]), float(item[0])))
+
+            for point in verticies_list:
+                first_point = Point(verticies_list[0][0],verticies_list[0][1])
+                cur_point = Point(point[0], point[1])
+                distance = first_point.distance(cur_point)
+                if distance > 25:
+                    log_Error("Distance between points was %f in polygon (%s)" % (distance, alert['polygon']))
+                    found_error = True
+
+            # If we got this far and don't have an error, we can safely compare
+            # polygons
+            if not found_error:
+                alert_polygon = Polygon(verticies_list)
+                for county in counties_list:
+                    bbox = county['bbox']
+                    county_polygon = box(bbox[0], bbox[1], bbox[2], bbox[3])
+                    if county_polygon.intersects(alert_polygon):
+                        alert['fips_list'].append(county['fips'])
 
         # Make sure there are no duplicates
         alert['fips_list'] = list(set(alert['fips_list']))
