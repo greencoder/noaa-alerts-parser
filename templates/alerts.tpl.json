@@ -31,7 +31,9 @@
 					"state": {{ county.state|escape_json }},
 					"fips": {{ county.fips|escape_json }},
 					"lng": {{ county.lng }},
-					"lat": {{ county.lat }}
+					"lat": {{ county.lat }},
+					"point": [{{ county.lng }}, {{ county.lat }}],
+					"box": {{ county.bbox }}
 				}{% if not loop.last %},{% endif %}{% endfor %}
 			],
 			"area_description": {{ alert.area_desc|escape_json }},
