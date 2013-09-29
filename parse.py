@@ -130,11 +130,12 @@ if __name__ == "__main__":
         alert['uuid'] = h.hexdigest()
 
         # Polygons come formatted as a string, but we transform it into 
-        # a valid GeoJSON coordinate array.
+        # a valid GeoJSON coordinate array. Valid means we have to turn around
+        # the coordinates to lng,lat
         if alert['polygon']:
             verticies_list = []
             for item in [v.split(",") for v in alert['polygon'].split(" ")]:
-                verticies_list.append([float(item[0]), float(item[1])])
+                verticies_list.append([float(item[1]), float(item[0])])
             alert['formatted_polygon'] = verticies_list
         else:
             alert['formatted_polygon'] = []
