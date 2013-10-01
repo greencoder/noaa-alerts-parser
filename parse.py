@@ -124,6 +124,19 @@ if __name__ == "__main__":
         alert['area_desc'] = get_element_text(entry_el, CAP_NS + 'areaDesc')
         alert['polygon'] = get_element_text(entry_el, CAP_NS + 'polygon')
 
+        # Some events are not weather related so we don't show them
+        skippable_events = (
+           '911 telephone outage emergency', 
+           '911 telephone outage',
+           'child abduction emergency',           
+           'test',
+        )
+
+        # Create a list of events to skip.
+        if alert['event'].lower() in skippable_events:
+            log("Skipping event: %s" % alert['event'])
+            continue
+
         # Create a unique hash from the ID
         h = hashlib.new('ripemd160')
         h.update(alert['id'])
