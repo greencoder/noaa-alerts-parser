@@ -129,6 +129,7 @@ if __name__ == "__main__":
            '911 telephone outage emergency', 
            '911 telephone outage',
            'child abduction emergency',           
+           'local area emergency',
            'test',
         )
 
