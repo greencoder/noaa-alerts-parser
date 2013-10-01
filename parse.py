@@ -190,9 +190,11 @@ if __name__ == "__main__":
             item_val = item.find(ATOM_NS + 'value').text
             item_type = item.find(ATOM_NS + 'valueName').text
             if item_type == "FIPS6":
-                alert['fips_list'].extend(item_val.split(" "))
+                if item_val != None:
+                    alert['fips_list'].extend(item_val.split(" "))
             elif item_type == "UGC":
-                alert['ugc_list'].extend(item_val.split(" "))
+                if item_val != None:
+                    alert['ugc_list'].extend(item_val.split(" "))
 
         # If there is a polygon in the alert, it might cover a county
         # that was not included in the FIPS list. We will turn the string 
