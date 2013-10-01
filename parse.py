@@ -292,7 +292,7 @@ if __name__ == "__main__":
         ### Final Sanitization Step - Clean up outliers ###
 
         if len(alert['severity']) == 0 or not alert['severity']:
-            alert['severity'] == "Unspecified"            
+            alert['severity'] = "Unspecified"            
 
         alerts_list.append(alert)
 
