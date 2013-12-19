@@ -9,7 +9,8 @@ import hashlib
 import sys
 
 from jinja2 import Template, Environment, FileSystemLoader
-from xml.etree import ElementTree as ET
+#from xml.etree import ElementTree as ET
+from lxml import etree as ET
 from dateutil import parser
 from shapely.geometry import box, Polygon, Point
 
@@ -24,16 +25,20 @@ if __name__ == "__main__":
     # Load states and counties
     states_filepath = os.path.join(CUR_DIR, 'data/states.json')
     f = codecs.open(states_filepath, 'r', 'utf-8')
-    contents = f.read()
-    states_list = json.loads(contents)
+    states_list = json.loads(f.read())
     f.close()
 
     counties_filepath = os.path.join(CUR_DIR, 'data/counties.json')
     f = codecs.open(counties_filepath, 'r', 'utf-8')
-    contents = f.read()
-    counties_list = json.loads(contents)
+    counties_list = json.loads(f.read())
     f.close()
-    
+
+    # Load UGC Zones
+    ugc_filepath = os.path.join(CUR_DIR, 'data/ugc_zones.json')
+    f = codecs.open(ugc_filepath, 'r', 'utf-8')
+    ugc_zones_list = json.loads(f.read())
+    f.close()
+
     states_dict = {}
     for state in states_list:
         states_dict[state['fips']] = state
@@ -46,6 +51,11 @@ if __name__ == "__main__":
     for state in states_list:
         state_abbrs_dict[state['abbr']] = state
 
+    ugc_zones_dict = {}
+    for ugc in ugc_zones_list:
+        zone = ugc['state'] + "Z" + ugc['zone']
+        ugc_zones_dict[zone] = ugc
+
     def log(message):
         now_utc = datetime.datetime.now(pytz.utc)
         log_filepath = os.path.join(CUR_DIR, 'output/log.txt')
@@ -57,6 +67,12 @@ if __name__ == "__main__":
         log_filepath = os.path.join(CUR_DIR, 'output/missing_fips.txt')
         f = codecs.open(log_filepath, 'a', 'utf-8')
         f.write("%s\n" % fips_code)
+        f.close()
+
+    def log_missing_ugc(ugc_code):
+        log_filepath = os.path.join(CUR_DIR, 'output/missing_ugc.txt')
+        f = codecs.open(log_filepath, 'a', 'utf-8')
+        f.write("%s\n" % ugc_code)
         f.close()
 
     def log_error(message):
@@ -80,7 +96,7 @@ if __name__ == "__main__":
         else:
             return default_value
 
-    # Try to load the last run of the alerts so we can skip having to 
+    # Try to load the last run of the alerts so we can skip having to
     # call out for every URL when we don't have to.
     try:
         json_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
@@ -98,7 +114,7 @@ if __name__ == "__main__":
     request_data = f.read()
     tree = ET.fromstring(request_data)
     entries_list = tree.findall(ATOM_NS + 'entry')
-    
+
     log("Requesting alerts feed. %d entries found." % len(entries_list))
 
     for entry_el in entries_list:
@@ -126,9 +142,9 @@ if __name__ == "__main__":
 
         # Some events are not weather related so we don't show them
         skippable_events = (
-           '911 telephone outage emergency', 
+           '911 telephone outage emergency',
            '911 telephone outage',
-           'child abduction emergency',           
+           'child abduction emergency',
            'local area emergency',
            'test',
         )
@@ -143,7 +159,7 @@ if __name__ == "__main__":
         h.update(alert['id'])
         alert['uuid'] = h.hexdigest()
 
-        # Polygons come formatted as a string, but we transform it into 
+        # Polygons come formatted as a string, but we transform it into
         # a valid GeoJSON coordinate array. Valid means we have to turn around
         # the coordinates to lng,lat
         if alert['polygon']:
@@ -155,7 +171,7 @@ if __name__ == "__main__":
             alert['formatted_polygon'] = []
 
         # Parse the title to get the local timezone name. This is a little
-        # hacky-hack, but it's the only way of knowing for sure what the 
+        # hacky-hack, but it's the only way of knowing for sure what the
         # timezone was without some really nasty work.
         if "until" in alert['title']:
             local_tz_start = alert['title'].index(' until') - 4
@@ -173,7 +189,7 @@ if __name__ == "__main__":
         alert['expires'] = parser.parse(alert['expires_datestr'])
         alert['updated'] = parser.parse(alert['updated_datestr'])
         alert['effective'] = parser.parse(alert['effective_datestr'])
-        
+
         # Convert the dates to UTC
         alert['published_utc'] = alert['published'].astimezone(pytz.utc)
         alert['expires_utc'] = alert['expires'].astimezone(pytz.utc)
@@ -181,36 +197,40 @@ if __name__ == "__main__":
         alert['effective_utc'] = alert['effective'].astimezone(pytz.utc)
 
         alert['fips_list'] = []
-        alert['ugc_list'] = []
+        alert['ugc_zones_list'] = []
         alert['counties_list'] = []
         alert['states_list'] = []
-        
-        # Look for the 'geocode' element and find the FIPS and UGCs
+
+        # Find the 'geocode' node and check the valueName elements
+        # for UGC or FIPS6
         for item in entry_el.findall(CAP_NS + 'geocode'):
-            item_val = item.find(ATOM_NS + 'value').text
-            item_type = item.find(ATOM_NS + 'valueName').text
-            if item_type == "FIPS6":
-                if item_val != None:
-                    alert['fips_list'].extend(item_val.split(" "))
-            elif item_type == "UGC":
-                if item_val != None:
-                    alert['ugc_list'].extend(item_val.split(" "))
+            for value_name_el in item.findall(ATOM_NS + 'valueName'):
+                if value_name_el.text == "FIPS6":
+                    value_el = value_name_el.getnext()
+                    if value_el is not None and value_el.text:
+                        alert['fips_list'].extend(value_el.text.split(" "))
+                elif value_name_el.text == "UGC":
+                    value_el = value_name_el.getnext()
+                    if value_el is not None and value_el.text:
+                        # We are only interested in zones right now
+                        if value_el.text[2:3] == "Z":
+                            alert['ugc_zones_list'].extend(value_el.text.split(" "))
 
         # If there is a polygon in the alert, it might cover a county
-        # that was not included in the FIPS list. We will turn the string 
-        # into a Shapely polygon, then compare it against every county to 
+        # that was not included in the FIPS list. We will turn the string
+        # into a Shapely polygon, then compare it against every county to
         # find matches.
-        
+
         # Sometimes the polygon has bad values, so we need to do some sanity
         # checking on the values. If it contains a value of "0" or "-0", exit.
-        # If the distance between any two verticies is greater than 25 units, 
+        # If the distance between any two verticies is greater than 25 units,
         # exit.
-        
+
         if alert['polygon']:
 
             verticies_list = []
             found_error = False
-            
+
             for item in [v.split(",") for v in alert['polygon'].split(" ")]:
                 # Make sure bad values aren't present
                 if '0' in item or '-0' in item:
@@ -239,13 +259,24 @@ if __name__ == "__main__":
                     if county_polygon.intersects(alert_polygon):
                         alert['fips_list'].append(county['fips'])
 
+        # Loop through all the ugc zones and get the associated counties
+        for ugc_code in alert['ugc_zones_list']:
+            try:
+                ugc_zone = ugc_zones_dict[ugc_code]
+                for fips in ugc_zone['fips']:
+                    if fips not in alert['fips_list']:
+                        alert['fips_list'].append(fips)
+            except KeyError:
+                log("Could not find UGC Zone Code: %s" % ugc_code)
+                log_missing_ugc(ugc_code)
+
         # Make sure there are no duplicates
         alert['fips_list'] = list(set(alert['fips_list']))
-        alert['ugc_list'] = list(set(alert['ugc_list']))
+        alert['ugc_zones_list'] = list(set(alert['ugc_zones_list']))
 
         # Loop through all fips and get the associated counties
         for fips in alert['fips_list']:
-            # For some reason, 'ant' shows up occasionally in the list 
+            # For some reason, 'ant' shows up occasionally in the list
             # of county FIPS codes. Ignore it.
             if fips == 'ant':
                 log("FIPS6 list includes 'ant' entry (%s). Skipping." % ", ".join(alert['fips_list']))
@@ -258,7 +289,7 @@ if __name__ == "__main__":
                 state = state_abbrs_dict[abbr]
                 if state not in alert['states_list']:
                     alert['states_list'].append(state)
-                
+
             except KeyError:
                 log("Could Not Find County FIPS: %s" % fips)
                 log_missing_fips(fips)
@@ -279,7 +310,7 @@ if __name__ == "__main__":
                     alert['note'] = old_alert['note']
                 break
 
-        # If we didn't find the current alert from the data in our last run, we need 
+        # If we didn't find the current alert from the data in our last run, we need
         # to call the CAP URL and get it.
         if not matched_last_record:
             log("Requesting CAP URL for UUID: %s" % alert['uuid'])
@@ -296,10 +327,10 @@ if __name__ == "__main__":
             alert['sender'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'senderName')
             alert['instruction'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'instruction')
             alert['description'] = get_element_text(cap_tree, CAP_NS + 'info/' + CAP_NS + 'description')
-            alert['note'] = get_element_text(cap_tree, CAP_NS + 'note')            
+            alert['note'] = get_element_text(cap_tree, CAP_NS + 'note')
 
             # We get the region from the name that is in parenthesis in the sender value
-            # e.g. "NWS Reno (Western Nevada)" We also have to make sure the first character is 
+            # e.g. "NWS Reno (Western Nevada)" We also have to make sure the first character is
             # upper cased.
             region = alert['sender'][alert['sender'].find("(")+1:alert['sender'].find(")")]
             region = region[0].upper() + region[1:]
@@ -308,7 +339,7 @@ if __name__ == "__main__":
         ### Final Sanitization Step - Clean up outliers ###
 
         if len(alert['severity']) == 0 or not alert['severity']:
-            alert['severity'] = "Unspecified"            
+            alert['severity'] = "Unspecified"
 
         alerts_list.append(alert)
 
@@ -327,7 +358,7 @@ now = datetime.datetime.now(pytz.utc).astimezone(pytz.utc)
 now_utc = parser.parse(now.strftime("%Y-%m-%d %H:%M:%S %Z"))
 next_update_utc = now_utc + datetime.timedelta(minutes=5)
 
-output = template.render(alerts=alerts_list, written_at_utc=now_utc, 
+output = template.render(alerts=alerts_list, written_at_utc=now_utc,
     next_update_utc=next_update_utc)
 
 output_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
