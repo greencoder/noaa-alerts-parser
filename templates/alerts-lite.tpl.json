@@ -1,0 +1,32 @@
+{
+	"created_utc": {{ written_at_utc.isoformat()|escape_json }},
+	"next_update_utc": {{ next_update_utc.isoformat()|escape_json }},
+	"alerts": [
+	{% for alert in alerts %}
+		{
+			"title": {{ alert.title|escape_json }},
+			"uuid": {{ alert.uuid|escape_json }},
+			"author": {{ alert.author|escape_json }},
+			"sender": {{ alert.sender|escape_json }},
+			"status": {{ alert.status|escape_json }},
+			"message_type": {{ alert.msg_type|escape_json }},
+			"event": {{ alert.event|escape_json }},
+			"category": {{ alert.category|escape_json }},
+			"urgency": {{ alert.urgency|escape_json }},
+			"severity": {{ alert.severity|escape_json }},
+			"certainty": {{ alert.certainty|escape_json }},
+			"timezone": {{ alert.timezone_abbr|escape_json }},
+			"updated": {{ alert.updated_utc.isoformat()|escape_json }},
+			"published": {{ alert.published_utc.isoformat()|escape_json }},
+			"effective": {{ alert.effective_utc.isoformat()|escape_json }},
+			"expires": {{ alert.expires_utc.isoformat()|escape_json }},
+			"region": {{ alert.region|escape_json }},
+			"counties": [{% for county in alert.counties_list %} 
+				{{ county.fips|escape_json }}{% if not loop.last %},{% endif %}{% endfor %}
+			],
+			"area_description": {{ alert.area_desc|escape_json }},
+			"summary": {{ alert.summary|escape_json }}
+		}{% if not loop.last %},{% endif %}
+	{% endfor %}
+	]
+}

@@ -332,9 +332,13 @@ if __name__ == "__main__":
             # We get the region from the name that is in parenthesis in the sender value
             # e.g. "NWS Reno (Western Nevada)" We also have to make sure the first character is
             # upper cased.
-            region = alert['sender'][alert['sender'].find("(")+1:alert['sender'].find(")")]
-            region = region[0].upper() + region[1:]
-            alert['region'] = region
+            start_index = alert['sender'].find("(")
+            end_index = alert['sender'].find(")")
+            if (start_index > 0) and (end_index > 0):
+                region = alert['sender'][start_index+1:end_index]
+                alert['region'] = region[0].upper() + region[1:]
+            else:
+                alert['region'] = "Unknown"
 
         ### Final Sanitization Step - Clean up outliers ###
 
@@ -352,16 +356,26 @@ def jinja_escape_js(val):
     return json.dumps(str(val))
 
 env.filters['escape_json'] = jinja_escape_js
-template = env.get_template('alerts.tpl.json')
+template_full = env.get_template('alerts.tpl.json')
+template_lite = env.get_template('alerts-lite.tpl.json')
 
 now = datetime.datetime.now(pytz.utc).astimezone(pytz.utc)
 now_utc = parser.parse(now.strftime("%Y-%m-%d %H:%M:%S %Z"))
 next_update_utc = now_utc + datetime.timedelta(minutes=5)
 
-output = template.render(alerts=alerts_list, written_at_utc=now_utc,
+output_full = template_full.render(alerts=alerts_list, written_at_utc=now_utc,
     next_update_utc=next_update_utc)
 
-output_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
-f = codecs.open(output_filepath, 'w', 'utf-8')
-f.write(output)
-f.close()
+output_lite = template_lite.render(alerts=alerts_list, written_at_utc=now_utc,
+    next_update_utc=next_update_utc)
+
+output_full_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
+output_lite_filepath = os.path.join(CUR_DIR, 'output/alerts-lite.json')
+
+# Write out the full file
+with codecs.open(output_full_filepath, 'w', 'utf-8') as f:
+    f.write(output_full)
+
+# Write out the lite file
+with codecs.open(output_lite_filepath, 'w', 'utf-8') as f:
+    f.write(output_lite)

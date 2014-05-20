@@ -10,4 +10,4 @@ output/*.gz
 output/*.plist
 data/metadata.json
 tools/*
-
+output/*.bz2

@@ -5,6 +5,7 @@ Shapely==1.2.18
 argparse==1.2.1
 dateutils==0.6.6
 distribute==0.6.34
+lxml==3.2.4
 pyshp==1.2.0
 python-dateutil==2.1
 pytz==2013b
