@@ -358,6 +358,7 @@ def jinja_escape_js(val):
 env.filters['escape_json'] = jinja_escape_js
 template_full = env.get_template('alerts.tpl.json')
 template_lite = env.get_template('alerts-lite.tpl.json')
+template_detail = env.get_template('alert_detail.tpl.json')
 
 now = datetime.datetime.now(pytz.utc).astimezone(pytz.utc)
 now_utc = parser.parse(now.strftime("%Y-%m-%d %H:%M:%S %Z"))
@@ -379,3 +380,10 @@ with codecs.open(output_full_filepath, 'w', 'utf-8') as f:
 # Write out the lite file
 with codecs.open(output_lite_filepath, 'w', 'utf-8') as f:
     f.write(output_lite)
+
+# Loop through all the alerts and write out individual detail pages
+for alert in alerts_list:
+    output_detail = template_detail.render(alert=alert, written_at_utc=now_utc)
+    output_detail_filepath = os.path.join(CUR_DIR, 'output/detail/%s.json' % alert['uuid'])
+    with codecs.open(output_detail_filepath, 'w', 'utf-8') as f:
+        f.write(output_detail)

@@ -3,6 +3,7 @@ temp/*
 *.pyc
 *.sh
 venv
+output/detail/*.json
 output/*.json
 output/*.txt
 output/*.html
