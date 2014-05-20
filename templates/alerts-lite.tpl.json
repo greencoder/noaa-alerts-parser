@@ -5,6 +5,7 @@
 	{% for alert in alerts %}
 		{
 			"title": {{ alert.title|escape_json }},
+			"detail-link": "http://wxalerts.org/detail/{{ alert.uuid }}.json",
 			"uuid": {{ alert.uuid|escape_json }},
 			"author": {{ alert.author|escape_json }},
 			"sender": {{ alert.sender|escape_json }},
