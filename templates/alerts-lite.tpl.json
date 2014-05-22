@@ -16,6 +16,9 @@
 			"effective": {{ alert.effective_utc.isoformat()|escape_json }},
 			"expires": {{ alert.expires_utc.isoformat()|escape_json }},
 			"region": {{ alert.region|escape_json }},
+        	"states": [{% for state in alert.states_list %}
+        		{{ state.fips|escape_json }}{% if not loop.last %},{% endif %}{% endfor %}
+        	],
 			"counties": [{% for county in alert.counties_list %}
 				{{ county.fips|escape_json }}{% if not loop.last %},{% endif %}{% endfor %}
 			],
