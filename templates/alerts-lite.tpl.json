@@ -22,8 +22,7 @@
 			"counties": [{% for county in alert.counties_list %}
 				{{ county.fips|escape_json }}{% if not loop.last %},{% endif %}{% endfor %}
 			],
-			"area_description": {{ alert.area_desc|escape_json }},
-			"summary": {{ alert.summary|escape_json }}
+			"area_description": {{ alert.area_desc|escape_json }}
 		}{% if not loop.last %},{% endif %}
 	{% endfor %}
 	]
