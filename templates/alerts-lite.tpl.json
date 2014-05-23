@@ -8,6 +8,7 @@
 			"title": {{ alert.title|escape_json }},
 			"detail_url": "http://wxalerts.org/detail/{{ alert.uuid }}.json",
 			"uuid": {{ alert.uuid|escape_json }},
+			"author": {{ alert.author|escape_json }},
 			"event": {{ alert.event|escape_json }},
 			"severity": {{ alert.severity|escape_json }},
 			"timezone": {{ alert.timezone_abbr|escape_json }},
