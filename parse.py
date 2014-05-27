@@ -343,7 +343,7 @@ if __name__ == "__main__":
             # If the region is "Storm Prediction Center - Norman, Oklahoma", that doesn't
             # really describe the region that is affected, so change it.
             if alert['region'] == "Storm Prediction Center - Norman, Oklahoma":
-                if len(alert['states_list'] > 0)
+                if len(alert['states_list']) > 0:
                     alert['region'] = ", ".join([state['name'] for state in alert['states_list']])
                 else:
                     alert['region'] = "Unknown"
