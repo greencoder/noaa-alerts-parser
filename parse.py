@@ -58,26 +58,26 @@ if __name__ == "__main__":
 
     def log(message):
         now_utc = datetime.datetime.now(pytz.utc)
-        log_filepath = os.path.join(CUR_DIR, 'output/log.txt')
+        log_filepath = os.path.join(CUR_DIR, 'output/logs/log.txt')
         f = codecs.open(log_filepath, 'a', 'utf-8')
         f.write("%s\t%s\n" % (now_utc, message))
         f.close()
 
     def log_missing_fips(fips_code):
-        log_filepath = os.path.join(CUR_DIR, 'output/missing_fips.txt')
+        log_filepath = os.path.join(CUR_DIR, 'output/logs/missing_fips.txt')
         f = codecs.open(log_filepath, 'a', 'utf-8')
         f.write("%s\n" % fips_code)
         f.close()
 
     def log_missing_ugc(ugc_code):
-        log_filepath = os.path.join(CUR_DIR, 'output/missing_ugc.txt')
+        log_filepath = os.path.join(CUR_DIR, 'output/logs/missing_ugc.txt')
         f = codecs.open(log_filepath, 'a', 'utf-8')
         f.write("%s\n" % ugc_code)
         f.close()
 
     def log_error(message):
         now_utc = datetime.datetime.now(pytz.utc)
-        log_filepath = os.path.join(CUR_DIR, 'output/errors.txt')
+        log_filepath = os.path.join(CUR_DIR, 'output/logs/errors.txt')
         f = codecs.open(log_filepath, 'a', 'utf-8')
         f.write("%s\t%s\n" % (now_utc, message))
         f.close()
