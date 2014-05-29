@@ -1,5 +1,6 @@
 import arrow
 import codecs
+import collections
 import json
 import os
 import sys
@@ -36,6 +37,12 @@ events_json_filepath = os.path.join(DATA_DIR, 'events.json')
 with codecs.open(events_json_filepath, 'r', encoding='UTF-8') as f:
     events_data = json.loads(f.read())
 
+# Remove "skippable" events that we don't want to include in the output
+omitted_events = ["911 Telephone Outage", "Child Abduction Emergency", "Law Enforcement Warning", \
+    "Test"]
+for omitted_event in omitted_events:
+    events_data.remove(omitted_event)
+
 # Get the severity data
 severities_json_filepath = os.path.join(DATA_DIR, 'severities.json')
 with codecs.open(severities_json_filepath, 'r', encoding='UTF-8') as f:
@@ -45,7 +52,6 @@ with codecs.open(severities_json_filepath, 'r', encoding='UTF-8') as f:
 states_json_filepath = os.path.join(DATA_DIR, 'states.json')
 with codecs.open(states_json_filepath, 'r', encoding='UTF-8') as f:
     states_data = json.loads(f.read())
-
 
 ### Part 4: Write static data files for event types ###
 
@@ -70,7 +76,7 @@ filepath = os.path.join(JSON_DIR, 'events.json')
 output_dict = { 
     "created_utc": alert_data['created_utc'],
     "next_update_utc": alert_data['next_update_utc'],
-    "events": events_dict,
+    "events": collections.OrderedDict(sorted(events_dict.items())),
 }
 with codecs.open(filepath, 'w', encoding='UTF-8') as f:
     f.write(json.dumps(output_dict, indent=4))
@@ -99,7 +105,7 @@ filepath = os.path.join(JSON_DIR, 'severities.json')
 output_dict = { 
     "created_utc": alert_data['created_utc'],
     "next_update_utc": alert_data['next_update_utc'],
-    "serverities": severities_dict,
+    "serverities": collections.OrderedDict(sorted(severities_dict.items())),
 }
 with codecs.open(filepath, 'w', encoding='UTF-8') as f:
     f.write(json.dumps(output_dict, indent=4))
@@ -128,7 +134,7 @@ filepath = os.path.join(JSON_DIR, 'states.json')
 output_dict = { 
     "created_utc": alert_data['created_utc'],
     "next_update_utc": alert_data['next_update_utc'],
-    "states": states_dict,
+    "states": collections.OrderedDict(sorted(states_dict.items())),
 }
 with codecs.open(filepath, 'w', encoding='UTF-8') as f:
     f.write(json.dumps(output_dict, indent=4))
