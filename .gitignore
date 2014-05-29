@@ -2,14 +2,5 @@
 temp/*
 *.pyc
 *.sh
-venv
-output/detail/*.json
-output/*.json
-output/*.txt
-output/*.html
-output/*.gz
-output/*.plist
-data/metadata.json
+output/*
 tools/*
-output/*.bz2
-output/pages/*
