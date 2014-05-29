@@ -9,7 +9,6 @@ import hashlib
 import sys
 
 from jinja2 import Template, Environment, FileSystemLoader
-#from xml.etree import ElementTree as ET
 from lxml import etree as ET
 from dateutil import parser
 from shapely.geometry import box, Polygon, Point
@@ -19,22 +18,30 @@ ATOM_NS = "{http://www.w3.org/2005/Atom}"
 CAP_NS = "{urn:oasis:names:tc:emergency:cap:1.1}"
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+DATA_DIR = os.path.join(CUR_DIR, 'data')
+LOGS_DIR = os.path.join(CUR_DIR, 'output/logs/')
+JSON_DIR = os.path.join(CUR_DIR, 'output/json/')
 
 if __name__ == "__main__":
 
+    # Make sure the output directories exist
+    for dir_name in ['json', 'json/detail', 'logs']:
+        if not os.path.exists(os.path.join(CUR_DIR, 'output/%s' % dir_name)):
+            os.makedirs(os.path.join(CUR_DIR, 'output/%s' % dir_name))
+
     # Load states and counties
-    states_filepath = os.path.join(CUR_DIR, 'data/states.json')
+    states_filepath = os.path.join(DATA_DIR, 'states.json')
     f = codecs.open(states_filepath, 'r', 'utf-8')
     states_list = json.loads(f.read())
     f.close()
 
-    counties_filepath = os.path.join(CUR_DIR, 'data/counties.json')
+    counties_filepath = os.path.join(DATA_DIR, 'counties.json')
     f = codecs.open(counties_filepath, 'r', 'utf-8')
     counties_list = json.loads(f.read())
     f.close()
 
     # Load UGC Zones
-    ugc_filepath = os.path.join(CUR_DIR, 'data/ugc_zones.json')
+    ugc_filepath = os.path.join(DATA_DIR, 'ugc_zones.json')
     f = codecs.open(ugc_filepath, 'r', 'utf-8')
     ugc_zones_list = json.loads(f.read())
     f.close()
@@ -59,26 +66,26 @@ if __name__ == "__main__":
     # Class Methods
     def log(message):
         now_utc = datetime.datetime.now(pytz.utc)
-        log_filepath = os.path.join(CUR_DIR, 'output/logs/log.txt')
+        log_filepath = os.path.join(LOGS_DIR, 'log.txt')
         f = codecs.open(log_filepath, 'a', 'utf-8')
         f.write("%s\t%s\n" % (now_utc, message))
         f.close()
 
     def log_missing_fips(fips_code):
-        log_filepath = os.path.join(CUR_DIR, 'output/logs/missing_fips.txt')
+        log_filepath = os.path.join(LOGS_DIR, 'missing_fips.txt')
         f = codecs.open(log_filepath, 'a', 'utf-8')
         f.write("%s\n" % fips_code)
         f.close()
 
     def log_missing_ugc(ugc_code):
-        log_filepath = os.path.join(CUR_DIR, 'output/logs/missing_ugc.txt')
+        log_filepath = os.path.join(LOGS_DIR, 'missing_ugc.txt')
         f = codecs.open(log_filepath, 'a', 'utf-8')
         f.write("%s\n" % ugc_code)
         f.close()
 
     def log_error(message):
         now_utc = datetime.datetime.now(pytz.utc)
-        log_filepath = os.path.join(CUR_DIR, 'output/logs/errors.txt')
+        log_filepath = os.path.join(LOGS_DIR, 'errors.txt')
         f = codecs.open(log_filepath, 'a', 'utf-8')
         f.write("%s\t%s\n" % (now_utc, message))
         f.close()
@@ -100,7 +107,7 @@ if __name__ == "__main__":
     # Try to load the last run of the alerts so we can skip having to
     # call out for every URL when we don't have to.
     try:
-        json_filepath = os.path.join(CUR_DIR, 'output/alerts_complete.json')
+        json_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
         f = codecs.open(json_filepath, 'r', 'utf-8')
         contents = f.read()
         f.close()
@@ -374,14 +381,14 @@ now_utc = parser.parse(now.strftime("%Y-%m-%d %H:%M:%S %Z"))
 next_update_utc = now_utc + datetime.timedelta(minutes=5)
 
 # Write out the full file
-output_full_filepath = os.path.join(CUR_DIR, 'output/alerts_complete.json')
+output_full_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
 output_full = template_full.render(alerts=alerts_list, written_at_utc=now_utc,
     next_update_utc=next_update_utc)
 with codecs.open(output_full_filepath, 'w', 'utf-8') as f:
     f.write(output_full)
 
 # Write out the regular file
-output_lite_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
+output_lite_filepath = os.path.join(JSON_DIR, 'alerts.json')
 output_lite = template_lite.render(alerts=alerts_list, written_at_utc=now_utc,
     next_update_utc=next_update_utc)
 with codecs.open(output_lite_filepath, 'w', 'utf-8') as f:
@@ -394,6 +401,6 @@ if not os.path.exists(os.path.join(CUR_DIR, 'output/detail')):
 # Loop through all the alerts and write out individual detail pages
 for alert in alerts_list:
     output_detail = template_detail.render(alert=alert, written_at_utc=now_utc)
-    output_detail_filepath = os.path.join(CUR_DIR, 'output/detail/%s.json' % alert['uuid'])
+    output_detail_filepath = os.path.join(JSON_DIR, 'detail/%s.json' % alert['uuid'])
     with codecs.open(output_detail_filepath, 'w', 'utf-8') as f:
         f.write(output_detail)

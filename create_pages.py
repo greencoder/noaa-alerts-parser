@@ -7,36 +7,47 @@ import sys
 from jinja2 import Template, Environment, FileSystemLoader
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+DATA_DIR = os.path.join(CUR_DIR, 'data')
+JSON_DIR = os.path.join(CUR_DIR, 'output/json')
+HTML_DIR = os.path.join(CUR_DIR, 'output/html')
 
-# Set up the Jinja templates
+# Set up the Jinja template engine
 env = Environment()
 env.loader = FileSystemLoader(os.path.join(CUR_DIR, 'templates'))
 
-# Make sure the directories exist
-for dir_name in ['events', 'severities', 'states']:
+### Part 1: Filesystem Setup ###
+
+# Make sure the output directories exist
+for dir_name in ['json/events', 'json/severities', 'json/states', 'json/detail', 'html']:
     if not os.path.exists(os.path.join(CUR_DIR, 'output/%s' % dir_name)):
         os.makedirs(os.path.join(CUR_DIR, 'output/%s' % dir_name))
 
-# Get the alerts data
-alerts_json_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
+
+### Part 2: Load up the data from JSON files ###
+
+# Get the alerts (lite) data
+alerts_json_filepath = os.path.join(JSON_DIR, 'alerts.json')
 with codecs.open(alerts_json_filepath, 'r', 'utf-8') as f:
     alert_data = json.loads(f.read())
     alerts = alert_data['alerts']
 
 # Get the events data
-events_json_filepath = os.path.join(CUR_DIR, 'data/events.json')
+events_json_filepath = os.path.join(DATA_DIR, 'events.json')
 with codecs.open(events_json_filepath, 'r', encoding='UTF-8') as f:
     events_data = json.loads(f.read())
 
 # Get the severity data
-severities_json_filepath = os.path.join(CUR_DIR, 'data/severities.json')
+severities_json_filepath = os.path.join(DATA_DIR, 'severities.json')
 with codecs.open(severities_json_filepath, 'r', encoding='UTF-8') as f:
     severities_data = json.loads(f.read())
 
 # Get the states data
-states_json_filepath = os.path.join(CUR_DIR, 'data/states.json')
+states_json_filepath = os.path.join(DATA_DIR, 'states.json')
 with codecs.open(states_json_filepath, 'r', encoding='UTF-8') as f:
     states_data = json.loads(f.read())
+
+
+### Part 4: Write static data files for event types ###
 
 # Create a page for every alert event
 events_dict = {}
@@ -50,12 +61,12 @@ for event in events_data:
     }
     events_dict[event] = len(filtered_alerts)
     filename = event.lower().replace(" ", "_")
-    filepath = os.path.join(CUR_DIR, 'output/events/%s.json' % filename)
+    filepath = os.path.join(JSON_DIR, 'events/%s.json' % filename)
     with codecs.open(filepath, 'w', encoding='UTF-8') as f:
         f.write(json.dumps(output_dict, indent=4))
 
-# Write out the events dict
-filepath = os.path.join(CUR_DIR, 'output/events.json')
+# Write out a static list of all event types with counts
+filepath = os.path.join(JSON_DIR, 'events.json')
 output_dict = { 
     "created_utc": alert_data['created_utc'],
     "next_update_utc": alert_data['next_update_utc'],
@@ -63,6 +74,9 @@ output_dict = {
 }
 with codecs.open(filepath, 'w', encoding='UTF-8') as f:
     f.write(json.dumps(output_dict, indent=4))
+
+
+### Part 5: Write static data files for severities ###
 
 # Create a page for every alert severity
 severities_dict = {}
@@ -76,12 +90,12 @@ for severity in severities_data:
     }
     severities_dict[severity] = len(filtered_alerts)
     filename = severity.lower().replace(" ", "_")
-    filepath = os.path.join(CUR_DIR, 'output/severities/%s.json' % filename)
+    filepath = os.path.join(JSON_DIR, 'severities/%s.json' % filename)
     with codecs.open(filepath, 'w', encoding='UTF-8') as f:
         f.write(json.dumps(output_dict, indent=4))
 
-# Write out the severities dict
-filepath = os.path.join(CUR_DIR, 'output/severities.json')
+# Write out a static list of all severities with counts
+filepath = os.path.join(JSON_DIR, 'severities.json')
 output_dict = { 
     "created_utc": alert_data['created_utc'],
     "next_update_utc": alert_data['next_update_utc'],
@@ -89,6 +103,9 @@ output_dict = {
 }
 with codecs.open(filepath, 'w', encoding='UTF-8') as f:
     f.write(json.dumps(output_dict, indent=4))
+
+
+### Part 6: Write static data files for states ###
 
 # Create a page for every alert state
 states_dict = {}
@@ -102,12 +119,12 @@ for state in states_data:
     }
     states_dict[state['name']] = len(filtered_alerts)
     filename = state['name'].lower().replace(" ", "_")
-    filepath = os.path.join(CUR_DIR, 'output/states/%s.json' % filename)
+    filepath = os.path.join(JSON_DIR, 'states/%s.json' % filename)
     with codecs.open(filepath, 'w', encoding='UTF-8') as f:
         f.write(json.dumps(output_dict, indent=4))
 
 # Write out the states dict
-filepath = os.path.join(CUR_DIR, 'output/states.json')
+filepath = os.path.join(JSON_DIR, 'states.json')
 output_dict = { 
     "created_utc": alert_data['created_utc'],
     "next_update_utc": alert_data['next_update_utc'],
@@ -117,10 +134,10 @@ with codecs.open(filepath, 'w', encoding='UTF-8') as f:
     f.write(json.dumps(output_dict, indent=4))
 
 
-# Create the HTML files (These need the full alerts data)
+### Part 7: Write static HTML files for alerts
 
-# Load the full alerts data
-alerts_json_filepath = os.path.join(CUR_DIR, 'output/alerts_complete.json')
+# Load the full alerts data (we can't use the partial data for these)
+alerts_json_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
 with codecs.open(alerts_json_filepath, 'r', 'utf-8') as f:
     alert_data = json.loads(f.read())
     alerts = alert_data['alerts']
@@ -135,7 +152,7 @@ template = env.get_template('events.tpl.html')
 created_utc = arrow.get(alert_data['created_utc'])
 output = template.render(alerts=alerts, written_at_utc=created_utc, written_at_utc_ts=created_utc.timestamp)
 
-output_filepath = os.path.join(CUR_DIR, 'output/events.html')
+output_filepath = os.path.join(HTML_DIR, 'events.html')
 with codecs.open(output_filepath, 'w', 'utf-8') as f:
     f.write(output)
 
@@ -165,6 +182,6 @@ created_utc = arrow.get(alert_data['created_utc'])
 output = template.render(states=alerts_by_state, written_at_utc=created_utc, 
     written_at_utc_ts=created_utc.timestamp)
 
-output_filepath = os.path.join(CUR_DIR, 'output/states.html')
+output_filepath = os.path.join(HTML_DIR, 'states.html')
 with codecs.open(output_filepath, 'w', 'utf-8') as f:
     f.write(output)
