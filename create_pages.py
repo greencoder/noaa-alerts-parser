@@ -26,6 +26,12 @@ for dir_name in ['json/events', 'json/severities', 'json/states', 'json/detail',
 
 ### Part 2: Load up the data from JSON files ###
 
+# Load the full alerts data
+alerts_json_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
+with codecs.open(alerts_json_filepath, 'r', 'utf-8') as f:
+    full_alert_data = json.loads(f.read())
+    full_alerts = full_alert_data['alerts']
+
 # Get the alerts (lite) data
 alerts_json_filepath = os.path.join(JSON_DIR, 'alerts.json')
 with codecs.open(alerts_json_filepath, 'r', 'utf-8') as f:
@@ -73,7 +79,7 @@ for event in events_data:
 
 # Write out a static list of all event types with counts
 filepath = os.path.join(JSON_DIR, 'events.json')
-output_dict = { 
+output_dict = {
     "created_utc": alert_data['created_utc'],
     "next_update_utc": alert_data['next_update_utc'],
     "events": collections.OrderedDict(sorted(events_dict.items())),
@@ -102,7 +108,7 @@ for severity in severities_data:
 
 # Write out a static list of all severities with counts
 filepath = os.path.join(JSON_DIR, 'severities.json')
-output_dict = { 
+output_dict = {
     "created_utc": alert_data['created_utc'],
     "next_update_utc": alert_data['next_update_utc'],
     "serverities": collections.OrderedDict(sorted(severities_dict.items())),
@@ -131,7 +137,7 @@ for state in states_data:
 
 # Write out the states dict
 filepath = os.path.join(JSON_DIR, 'states.json')
-output_dict = { 
+output_dict = {
     "created_utc": alert_data['created_utc'],
     "next_update_utc": alert_data['next_update_utc'],
     "states": collections.OrderedDict(sorted(states_dict.items())),
@@ -140,13 +146,29 @@ with codecs.open(filepath, 'w', encoding='UTF-8') as f:
     f.write(json.dumps(output_dict, indent=4))
 
 
-### Part 7: Write static HTML files for alerts
+### Part 7: Write static data file for locations
+filepath = os.path.join(JSON_DIR, 'locations.json')
+located_alerts = []
+for alert in full_alerts:
+    located_alerts.append({
+        "detail_url": "http://wxalerts.org/json/detail/%s.json" % alert['uuid'],
+        "sender": alert['sender'],
+        "event": alert['event'],
+        "severity": alert['severity'],
+        "expires": alert['expires'],
+        "coordinates": [(c['lng'], c['lat']) for c in alert['counties']],
+    })
 
-# Load the full alerts data (we can't use the partial data for these)
-alerts_json_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
-with codecs.open(alerts_json_filepath, 'r', 'utf-8') as f:
-    alert_data = json.loads(f.read())
-    alerts = alert_data['alerts']
+output_dict = {
+    "created_utc": alert_data['created_utc'],
+    "next_update_utc": alert_data['next_update_utc'],
+    "alerts": located_alerts,
+}
+with codecs.open(filepath, 'w', encoding='UTF-8') as f:
+    f.write(json.dumps(output_dict, indent=4))
+
+
+### Part 8: Write static HTML files for alerts
 
 # Load the state abbreviations
 states = {}
@@ -156,7 +178,7 @@ for state_dict in states_data:
 # Write out the events html file
 template = env.get_template('events.tpl.html')
 created_utc = arrow.get(alert_data['created_utc'])
-output = template.render(alerts=alerts, written_at_utc=created_utc, written_at_utc_ts=created_utc.timestamp)
+output = template.render(alerts=full_alerts, written_at_utc=created_utc, written_at_utc_ts=created_utc.timestamp)
 
 output_filepath = os.path.join(HTML_DIR, 'events.html')
 with codecs.open(output_filepath, 'w', 'utf-8') as f:
@@ -167,14 +189,14 @@ with codecs.open(output_filepath, 'w', 'utf-8') as f:
 # Loop through the alerts and get the state(s) it applies to.
 # Keep a list, by state, of all the alerts.
 alerts_by_state = {}
-for alert in alerts:
-    # First we need to get a set of all the states this alert 
-    # applies to. We can create an array and then run a set operation 
+for alert in full_alerts:
+    # First we need to get a set of all the states this alert
+    # applies to. We can create an array and then run a set operation
     # to remove duplicates.
     state_abbrs = []
     for county in alert['counties']:
         state_abbrs.append(county['state'])
-    # Now that we have a unique list of states, we need to look up the full 
+    # Now that we have a unique list of states, we need to look up the full
     # state name. That will be the key that we store the alerts by.
     for abbr in list(set(state_abbrs)):
         state_name = states[abbr]
@@ -185,7 +207,7 @@ for alert in alerts:
 
 template = env.get_template('states.tpl.html')
 created_utc = arrow.get(alert_data['created_utc'])
-output = template.render(states=alerts_by_state, written_at_utc=created_utc, 
+output = template.render(states=alerts_by_state, written_at_utc=created_utc,
     written_at_utc_ts=created_utc.timestamp)
 
 output_filepath = os.path.join(HTML_DIR, 'states.html')
