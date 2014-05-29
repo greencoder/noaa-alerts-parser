@@ -12,3 +12,4 @@ output/*.plist
 data/metadata.json
 tools/*
 output/*.bz2
+output/pages/*
