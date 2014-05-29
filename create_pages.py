@@ -79,10 +79,11 @@ for event in events_data:
 
 # Write out a static list of all event types with counts
 filepath = os.path.join(JSON_DIR, 'events.json')
+ordered_events = collections.OrderedDict(sorted(events_dict.items()))
 output_dict = {
     "created_utc": alert_data['created_utc'],
     "next_update_utc": alert_data['next_update_utc'],
-    "events": collections.OrderedDict(sorted(events_dict.items())),
+    "events": ordered_events,
 }
 with codecs.open(filepath, 'w', encoding='UTF-8') as f:
     f.write(json.dumps(output_dict, indent=4))
@@ -108,10 +109,11 @@ for severity in severities_data:
 
 # Write out a static list of all severities with counts
 filepath = os.path.join(JSON_DIR, 'severities.json')
+ordered_severities = collections.OrderedDict(sorted(severities_dict.items()))
 output_dict = {
     "created_utc": alert_data['created_utc'],
     "next_update_utc": alert_data['next_update_utc'],
-    "serverities": collections.OrderedDict(sorted(severities_dict.items())),
+    "serverities": ordered_severities,
 }
 with codecs.open(filepath, 'w', encoding='UTF-8') as f:
     f.write(json.dumps(output_dict, indent=4))
@@ -137,10 +139,11 @@ for state in states_data:
 
 # Write out the states dict
 filepath = os.path.join(JSON_DIR, 'states.json')
+ordered_states = collections.OrderedDict(sorted(states_dict.items()))
 output_dict = {
     "created_utc": alert_data['created_utc'],
     "next_update_utc": alert_data['next_update_utc'],
-    "states": collections.OrderedDict(sorted(states_dict.items())),
+    "states": ordered_states,
 }
 with codecs.open(filepath, 'w', encoding='UTF-8') as f:
     f.write(json.dumps(output_dict, indent=4))
@@ -148,6 +151,9 @@ with codecs.open(filepath, 'w', encoding='UTF-8') as f:
 
 ### Part 7: Write static data file for locations
 filepath = os.path.join(JSON_DIR, 'locations.json')
+
+# We have to reach into the full alerts to get the counties for each 
+# alert and then the centroid lat/lng for each county
 located_alerts = []
 for alert in full_alerts:
     located_alerts.append({
@@ -168,7 +174,7 @@ with codecs.open(filepath, 'w', encoding='UTF-8') as f:
     f.write(json.dumps(output_dict, indent=4))
 
 
-### Part 8: Write static HTML files for alerts
+### Part 8: Write static HTML file for alerts
 
 # Load the state abbreviations
 states = {}
@@ -184,7 +190,8 @@ output_filepath = os.path.join(HTML_DIR, 'events.html')
 with codecs.open(output_filepath, 'w', 'utf-8') as f:
     f.write(output)
 
-# Create the states html file
+
+### Part 9: Write static HTML file for states
 
 # Loop through the alerts and get the state(s) it applies to.
 # Keep a list, by state, of all the alerts.
