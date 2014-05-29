@@ -18,7 +18,7 @@ for dir_name in ['events', 'severities', 'states']:
         os.makedirs(os.path.join(CUR_DIR, 'output/%s' % dir_name))
 
 # Get the alerts data
-alerts_json_filepath = os.path.join(CUR_DIR, 'output/alerts-lite.json')
+alerts_json_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
 with codecs.open(alerts_json_filepath, 'r', 'utf-8') as f:
     alert_data = json.loads(f.read())
     alerts = alert_data['alerts']
@@ -93,7 +93,7 @@ with codecs.open(filepath, 'w', encoding='UTF-8') as f:
 # Create a page for every alert state
 states_dict = {}
 for state in states_data:
-    filtered_alerts = [a for a in alerts if state['fips'] in a['states']]
+    filtered_alerts = [a for a in alerts if state['name'] in a['states']]
     output_dict = {
         "created_utc": alert_data['created_utc'],
         "next_update_utc": alert_data['next_update_utc'],
@@ -120,7 +120,7 @@ with codecs.open(filepath, 'w', encoding='UTF-8') as f:
 # Create the HTML files (These need the full alerts data)
 
 # Load the full alerts data
-alerts_json_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
+alerts_json_filepath = os.path.join(CUR_DIR, 'output/alerts_complete.json')
 with codecs.open(alerts_json_filepath, 'r', 'utf-8') as f:
     alert_data = json.loads(f.read())
     alerts = alert_data['alerts']

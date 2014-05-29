@@ -56,6 +56,7 @@ if __name__ == "__main__":
         zone = ugc['state'] + "Z" + ugc['zone']
         ugc_zones_dict[zone] = ugc
 
+    # Class Methods
     def log(message):
         now_utc = datetime.datetime.now(pytz.utc)
         log_filepath = os.path.join(CUR_DIR, 'output/logs/log.txt')
@@ -99,7 +100,7 @@ if __name__ == "__main__":
     # Try to load the last run of the alerts so we can skip having to
     # call out for every URL when we don't have to.
     try:
-        json_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
+        json_filepath = os.path.join(CUR_DIR, 'output/alerts_complete.json')
         f = codecs.open(json_filepath, 'r', 'utf-8')
         contents = f.read()
         f.close()
@@ -364,30 +365,31 @@ def jinja_escape_js(val):
     return json.dumps(str(val))
 
 env.filters['escape_json'] = jinja_escape_js
-template_full = env.get_template('alerts.tpl.json')
-template_lite = env.get_template('alerts-lite.tpl.json')
+template_full = env.get_template('alerts_full.tpl.json')
+template_lite = env.get_template('alerts.tpl.json')
 template_detail = env.get_template('alert_detail.tpl.json')
 
 now = datetime.datetime.now(pytz.utc).astimezone(pytz.utc)
 now_utc = parser.parse(now.strftime("%Y-%m-%d %H:%M:%S %Z"))
 next_update_utc = now_utc + datetime.timedelta(minutes=5)
 
+# Write out the full file
+output_full_filepath = os.path.join(CUR_DIR, 'output/alerts_complete.json')
 output_full = template_full.render(alerts=alerts_list, written_at_utc=now_utc,
     next_update_utc=next_update_utc)
-
-output_lite = template_lite.render(alerts=alerts_list, written_at_utc=now_utc,
-    next_update_utc=next_update_utc)
-
-output_full_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
-output_lite_filepath = os.path.join(CUR_DIR, 'output/alerts-lite.json')
-
-# Write out the full file
 with codecs.open(output_full_filepath, 'w', 'utf-8') as f:
     f.write(output_full)
 
-# Write out the lite file
+# Write out the regular file
+output_lite_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
+output_lite = template_lite.render(alerts=alerts_list, written_at_utc=now_utc,
+    next_update_utc=next_update_utc)
 with codecs.open(output_lite_filepath, 'w', 'utf-8') as f:
     f.write(output_lite)
+
+# Make sure output detail directory exists
+if not os.path.exists(os.path.join(CUR_DIR, 'output/detail')):
+    os.makedirs(os.path.join(CUR_DIR, 'output/detail'))
 
 # Loop through all the alerts and write out individual detail pages
 for alert in alerts_list:
