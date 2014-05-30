@@ -162,6 +162,7 @@ for alert in full_alerts:
         "event": alert['event'],
         "severity": alert['severity'],
         "expires": alert['expires'],
+        "states": alert['states'],
         "coordinates": [(c['lng'], c['lat']) for c in alert['counties']],
     })
 
