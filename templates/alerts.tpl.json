@@ -13,7 +13,8 @@
 			"region": {{ alert.region|escape_json }},
         	"states": [{% for state in alert.states_list %}
         		{{ state.name|escape_json }}{% if not loop.last %},{% endif %}{% endfor %}
-        	]
+        	],
+        	"area_description": {{ alert.area_desc|escape_json }}
 		}{% if not loop.last %},{% endif %}
 	{% endfor %}
 	]
