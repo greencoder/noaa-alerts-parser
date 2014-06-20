@@ -375,6 +375,7 @@ env.filters['escape_json'] = jinja_escape_js
 template_full = env.get_template('alerts_full.tpl.json')
 template_lite = env.get_template('alerts.tpl.json')
 template_detail = env.get_template('alert_detail.tpl.json')
+template_count = env.get_template('counts.tpl.json')
 
 now = datetime.datetime.now(pytz.utc).astimezone(pytz.utc)
 now_utc = parser.parse(now.strftime("%Y-%m-%d %H:%M:%S %Z"))
@@ -393,6 +394,13 @@ output_lite = template_lite.render(alerts=alerts_list, written_at_utc=now_utc,
     next_update_utc=next_update_utc)
 with codecs.open(output_lite_filepath, 'w', 'utf-8') as f:
     f.write(output_lite)
+
+# Write out the count file
+count_filepath = os.path.join(JSON_DIR, 'counts.json')
+count_output = template_count.render(alerts=alerts_list, written_at_utc=now_utc,
+    next_update_utc=next_update_utc)
+with codecs.open(count_filepath, 'w', 'utf-8') as f:
+    f.write(count_output)
 
 # Make sure output detail directory exists
 if not os.path.exists(os.path.join(CUR_DIR, 'output/detail')):
