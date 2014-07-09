@@ -90,6 +90,21 @@ if __name__ == "__main__":
         f.write("%s\t%s\n" % (now_utc, message))
         f.close()
 
+    def log_special_statement(message):
+        now_utc = datetime.datetime.now(pytz.utc)
+        log_filepath = os.path.join(LOGS_DIR, 'missing_sws.txt')
+        f = codecs.open(log_filepath, 'a', 'utf-8')
+        f.write("%s\t%s\n\n" % (now_utc, message))
+        f.close()
+
+    def save_bad_xml(file_contents):
+        now_utc = datetime.datetime.now(pytz.utc)
+        time_str = now_utc.strftime('%Y%m%d_%H%M%S')
+        log_filepath = os.path.join(LOGS_DIR, 'bad_alert_%s.xml' % time_str)
+        f = codecs.open(log_filepath, 'a', 'utf-8')
+        f.write("%s\t%s\n\n" % (now_utc, message))
+        f.close()
+
     def get_element_text(element, name, default_value=''):
         el = element.find(name)
         if el is not None and el.text:
@@ -118,12 +133,18 @@ if __name__ == "__main__":
     # Load up the new alerts
     alerts_list = []
 
+    # Grab the URL
     f = urllib2.urlopen(NOAA_URL, timeout=5)
     request_data = f.read()
-    tree = ET.fromstring(request_data)
-    entries_list = tree.findall(ATOM_NS + 'entry')
-
-    log("Requesting alerts feed. %d entries found." % len(entries_list))
+    
+    try:
+        tree = ET.fromstring(request_data)
+        entries_list = tree.findall(ATOM_NS + 'entry')
+        log("Requesting alerts feed. %d entries found." % len(entries_list))
+    except lxml.etree.XMLSyntaxError:
+        log_error("Bad XML Received. Aborting.")
+        log_bad_xml(request_data)
+        sys.exit()
 
     for entry_el in entries_list:
 
@@ -161,6 +182,28 @@ if __name__ == "__main__":
         if alert['event'].lower() in skippable_events:
             log("Skipping event: %s" % alert['event'])
             continue
+
+        # If the event is 'Special Weather Statement', try to figure out what it's
+        # pertaining to
+        if alert['event'] == "Special Weather Statement":
+
+            # We don't know what kind of capitalization might be used
+            summary = alert['summary'].lower()
+
+            if "tornado" in summary:
+                alert['event'] = 'Special Weather Statement (Tornado)'
+            elif "hail" in summary:
+                alert['event'] = 'Special Weather Statement (Hail)'
+            elif "thunderstorm" in summary:
+                alert['event'] = 'Special Weather Statement (Thunderstorms)'
+            elif "snow" in summary:
+                alert['event'] = 'Special Weather Statement (Snow)'
+            elif "flooding" in summary:
+                alert['event'] = 'Special Weather Statement (Flooding)'
+            elif 'water level' in summary:
+                alert['event'] = 'Special Weather Statement (Flooding)'
+            else:
+                log_special_statement(summary)
 
         # Create a unique hash from the ID
         h = hashlib.new('ripemd160')
