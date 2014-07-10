@@ -389,7 +389,7 @@ if __name__ == "__main__":
             if alert['event'] == "Special Weather Statement":
 
                 # We don't know what kind of capitalization might be used
-                description = alert['description'].lower()
+                description = alert['description'].lower().replace("\n", " ")
 
                 # We will append any of the keywords we find to the event
                 matched_suffixes = []
@@ -401,13 +401,15 @@ if __name__ == "__main__":
                 if matched_suffixes:
                     suffixes_string = ", ".join(matched_suffixes)
                     alert['event'] = "Special Weather Statement (%s)" % suffixes_string
+                else:
+                    log_special_statement(description)
 
             # If the event is 'Severe Weather Statement, figure out what it's about
             # and add a suffix
             if alert['event'] == "Severe Weather Statement":
 
                 # We don't know what kind of capitalization might be used
-                description = alert['description'].lower()
+                description = alert['description'].lower().replace("\n", " ")
 
                 # Find any matching suffixes
                 matched_suffixes = []
@@ -419,6 +421,8 @@ if __name__ == "__main__":
                 if matched_suffixes:
                     suffixes_string = ", ".join(matched_suffixes)
                     alert['event'] = "Severe Weather Statement (%s)" % suffixes_string
+                else:
+                    log_special_statement(description)
 
         ### Final Sanitization Step - Clean up outliers ###
 
