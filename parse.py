@@ -46,6 +46,12 @@ if __name__ == "__main__":
     ugc_zones_list = json.loads(f.read())
     f.close()
 
+    # Load Special Weather Statement replacements
+    special_filepath = os.path.join(DATA_DIR, 'special.json')
+    f = codecs.open(special_filepath, 'r', 'utf-8')
+    special_replacements_list = json.loads(f.read())
+    f.close()
+
     states_dict = {}
     for state in states_list:
         states_dict[state['fips']] = state
@@ -182,28 +188,6 @@ if __name__ == "__main__":
         if alert['event'].lower() in skippable_events:
             log("Skipping event: %s" % alert['event'])
             continue
-
-        # If the event is 'Special Weather Statement', try to figure out what it's
-        # pertaining to
-        if alert['event'] == "Special Weather Statement":
-
-            # We don't know what kind of capitalization might be used
-            summary = alert['summary'].lower()
-
-            if "tornado" in summary:
-                alert['event'] = 'Special Weather Statement (Tornado)'
-            elif "hail" in summary:
-                alert['event'] = 'Special Weather Statement (Hail)'
-            elif "thunderstorm" in summary:
-                alert['event'] = 'Special Weather Statement (Thunderstorms)'
-            elif "snow" in summary:
-                alert['event'] = 'Special Weather Statement (Snow)'
-            elif "flooding" in summary:
-                alert['event'] = 'Special Weather Statement (Flooding)'
-            elif 'water level' in summary:
-                alert['event'] = 'Special Weather Statement (Flooding)'
-            else:
-                log_special_statement(summary)
 
         # Create a unique hash from the ID
         h = hashlib.new('ripemd160')
@@ -354,6 +338,7 @@ if __name__ == "__main__":
                 if old_alert['updated'] == alert['updated_utc'].isoformat():
                     matched_last_record = True
                     # If it hasn't been updated, use these values
+                    alert['event'] = old_alert['event']
                     alert['region'] = old_alert['region']
                     alert['sender'] = old_alert['sender']
                     alert['instruction'] = old_alert['instruction']
@@ -398,6 +383,30 @@ if __name__ == "__main__":
                     alert['region'] = ", ".join([state['name'] for state in alert['states_list']])
                 else:
                     alert['region'] = "Unknown"
+
+            # If the event is 'Special Weather Statement', try to figure out what it's
+            # pertaining to
+            if alert['event'] == "Special Weather Statement":
+
+                # We don't know what kind of capitalization might be used
+                description = alert['description'].lower()
+
+                for [keyword, suffix] in special_replacements_list:
+                    if keyword in description:
+                        alert['event'] = "Special Weather Statement (%s)" % suffix
+                        break
+            
+            # If the event is 'Severe Weather Statement, figure out what it's about
+            # and add a suffix
+            if alert['event'] == "Severe Weather Statement":
+
+                # We don't know what kind of capitalization might be used
+                description = alert['description'].lower()
+
+                for [keyword, suffix] in special_replacements_list:
+                    if keyword in description:
+                        alert['event'] = "Severe Weather Statement (%s)" % suffix
+                        break
 
         ### Final Sanitization Step - Clean up outliers ###
 
