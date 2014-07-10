@@ -1,8 +1,9 @@
 [
     ["tornado", "Tornado"],
     ["hail", "Hail"],
-    ["thunder", "Thunderstorms"],
-    ["snow", "Snow"],
+    ["thunderstorm", "Thunderstorms"],
+    ["heavy snow", "Snow"],
+    ["blowing snow", "Snow"],
     ["flood", "Flooding"],
     ["wind gust", "Wind"],
     ["water levels", "Flooding"],
