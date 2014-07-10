@@ -399,9 +399,11 @@ if __name__ == "__main__":
 
                 # Add all the suffixes to the event
                 if matched_suffixes:
-                    suffixes_string = ", ".join(matched_suffixes)
+                    suffixes_string = ", ".join(sorted(matched_suffixes))
+                    log("Added Keywords to Special Weather Statement: %s" % suffixes_string)
                     alert['event'] = "Special Weather Statement (%s)" % suffixes_string
                 else:
+                    log("Found Special Weather Statement That Did Not Match Available Keywords")
                     log_special_statement(description)
 
             # If the event is 'Severe Weather Statement, figure out what it's about
@@ -419,9 +421,11 @@ if __name__ == "__main__":
 
                 # Add the suffixes
                 if matched_suffixes:
-                    suffixes_string = ", ".join(matched_suffixes)
+                    suffixes_string = ", ".join(sorted(matched_suffixes))
+                    log("Added Keywords to Severe Weather Statement: %s" % suffixes_string)
                     alert['event'] = "Severe Weather Statement (%s)" % suffixes_string
                 else:
+                    log("Found Severe Weather Statement That Did Not Match Available Keywords")
                     log_special_statement(description)
 
         ### Final Sanitization Step - Clean up outliers ###
