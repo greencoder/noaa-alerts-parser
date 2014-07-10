@@ -142,7 +142,7 @@ if __name__ == "__main__":
     # Grab the URL
     f = urllib2.urlopen(NOAA_URL, timeout=5)
     request_data = f.read()
-    
+
     try:
         tree = ET.fromstring(request_data)
         entries_list = tree.findall(ATOM_NS + 'entry')
@@ -385,17 +385,23 @@ if __name__ == "__main__":
                     alert['region'] = "Unknown"
 
             # If the event is 'Special Weather Statement', try to figure out what it's
-            # pertaining to
+            # pertaining to. We will add these to the event type.
             if alert['event'] == "Special Weather Statement":
 
                 # We don't know what kind of capitalization might be used
                 description = alert['description'].lower()
 
+                # We will append any of the keywords we find to the event
+                matched_suffixes = []
                 for [keyword, suffix] in special_replacements_list:
                     if keyword in description:
-                        alert['event'] = "Special Weather Statement (%s)" % suffix
-                        break
-            
+                        matched_suffixes.append(suffix)
+
+                # Add all the suffixes to the event
+                if matched_suffixes:
+                    suffixes_string = ", ".join(matched_suffixes)
+                    alert['event'] = "Special Weather Statement (%s)" % suffixes_string
+
             # If the event is 'Severe Weather Statement, figure out what it's about
             # and add a suffix
             if alert['event'] == "Severe Weather Statement":
@@ -403,10 +409,16 @@ if __name__ == "__main__":
                 # We don't know what kind of capitalization might be used
                 description = alert['description'].lower()
 
+                # Find any matching suffixes
+                matched_suffixes = []
                 for [keyword, suffix] in special_replacements_list:
                     if keyword in description:
-                        alert['event'] = "Severe Weather Statement (%s)" % suffix
-                        break
+                        matched_suffixes.append(suffix)
+
+                # Add the suffixes
+                if matched_suffixes:
+                    suffixes_string = ", ".join(matched_suffixes)
+                    alert['event'] = "Severe Weather Statement (%s)" % suffixes_string
 
         ### Final Sanitization Step - Clean up outliers ###
 

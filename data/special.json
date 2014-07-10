@@ -4,5 +4,10 @@
     ["thunder", "Thunderstorms"],
     ["snow", "Snow"],
     ["flood", "Flooding"],
-    ["wind gust", "Wind"]
+    ["wind gust", "Wind"],
+    ["water levels", "Flooding"],
+    ["fire danger", "Fire Danger"],
+    ["fire warning", "Fire Danger"],
+    ["red flag", "Fire Danger"],
+    ["dense fog", "Fog"],
 ]
