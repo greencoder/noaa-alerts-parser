@@ -432,6 +432,10 @@ if __name__ == "__main__":
 
         ### Final Sanitization Step - Clean up outliers ###
 
+        if alert['sender'] == "":
+            log("Missing Sender for Alert %s" % alert['guid'])
+            alert['sender'] = "Unknown"
+
         if len(alert['severity']) == 0 or not alert['severity']:
             alert['severity'] = "Unspecified"
 
