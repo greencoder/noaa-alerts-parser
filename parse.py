@@ -399,7 +399,8 @@ if __name__ == "__main__":
 
                 # Add all the suffixes to the event
                 if matched_suffixes:
-                    sorted_suffixes = sorted(matched_suffixes)
+                    unique_suffixes = list(set(matched_suffixes))
+                    sorted_suffixes = sorted(unique_suffixes)
                     suffixes_string = ", ".join(sorted_suffixes)
                     log("Added Keywords to Special Weather Statement: %s" % suffixes_string)
                     alert['event'] = "Special Weather Statement (%s)" % suffixes_string
@@ -422,7 +423,8 @@ if __name__ == "__main__":
 
                 # Add the suffixes
                 if matched_suffixes:
-                    sorted_suffixes = sorted(matched_suffixes)
+                    unique_suffixes = list(set(matched_suffixes))
+                    sorted_suffixes = sorted(unique_suffixes)
                     suffixes_string = ", ".join(sorted_suffixes)
                     log("Added Keywords to Severe Weather Statement: %s" % suffixes_string)
                     alert['event'] = "Severe Weather Statement (%s)" % suffixes_string
