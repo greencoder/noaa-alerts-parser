@@ -12,5 +12,6 @@
     ["fire warning", "Fire Danger"],
     ["red flag", "Fire Danger"],
     ["dense fog", "Fog"],
-    ["heavy rain", "Rain"]
+    ["heavy rain", "Flooding"],
+    ["hot temperatures", "Heat"]
 ]
