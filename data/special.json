@@ -5,6 +5,7 @@
     ["heavy snow", "Snow"],
     ["blowing snow", "Snow"],
     ["flood", "Flooding"],
+    ["gusty winds", "Wind"],
     ["wind gust", "Wind"],
     ["water levels", "Flooding"],
     ["fire danger", "Fire Danger"],
