@@ -1,17 +1,24 @@
 [
     ["tornado", "Tornado"],
+    ["funnel clouds", "Tornado"],
     ["hail", "Hail"],
     ["thunderstorm", "Thunderstorms"],
     ["heavy snow", "Snow"],
     ["blowing snow", "Snow"],
     ["flood", "Flooding"],
+    ["scattered showers", "Rain"],
     ["gusty winds", "Wind"],
+    ["outflow boundary", "Wind"],
     ["wind gust", "Wind"],
     ["water levels", "Flooding"],
     ["fire danger", "Fire Danger"],
     ["fire warning", "Fire Danger"],
     ["red flag", "Fire Danger"],
     ["dense fog", "Fog"],
+    ["areas of fog", "Fog"],
     ["heavy rain", "Flooding"],
-    ["hot temperatures", "Heat"]
+    ["hot temperatures", "Heat"],
+    ["heat index", "Heat"],
+    ["heat indices", "Heat"],
+    ["alert has expired", "Expired"]
 ]
