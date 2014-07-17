@@ -4,3 +4,4 @@ temp/*
 *.sh
 output/*
 tools/*
+PARSER.pid

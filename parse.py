@@ -70,6 +70,25 @@ if __name__ == "__main__":
         ugc_zones_dict[zone] = ugc
 
     # Class Methods
+
+    def check_pidfile_exists():
+        pid_filepath = os.path.join(CUR_DIR, "PARSER.pid")
+        if os.path.exists(pid_filepath):
+            log("pid file found. Aborting run.")
+            return True
+        return False
+
+    def create_pidfile():
+        pid_filepath = os.path.join(CUR_DIR, "PARSER.pid")
+        f = codecs.open(pid_filepath, 'w')
+        f.write("%s" % os.getpid())
+        f.close()
+
+    def remove_pidfile():
+        pid_filepath = os.path.join(CUR_DIR, "PARSER.pid")
+        if os.path.exists(pid_filepath):
+            os.remove(pid_filepath)
+
     def log(message):
         now_utc = datetime.datetime.now(pytz.utc)
         log_filepath = os.path.join(LOGS_DIR, 'log.txt')
@@ -124,6 +143,10 @@ if __name__ == "__main__":
             return el.attrib[attr_name].strip()
         else:
             return default_value
+
+    # See if the parser is running in another instance (We aren't using this
+    # yet but it's intersting to keep around.)
+    create_pidfile()
 
     # Try to load the last run of the alerts so we can skip having to
     # call out for every URL when we don't have to.
@@ -443,52 +466,55 @@ if __name__ == "__main__":
 
         alerts_list.append(alert)
 
-# Write out the alerts
-# Prepare to render the alerts
-env = Environment()
-env.loader = FileSystemLoader(os.path.join(CUR_DIR, 'templates'))
+    # Write out the alerts
+    # Prepare to render the alerts
+    env = Environment()
+    env.loader = FileSystemLoader(os.path.join(CUR_DIR, 'templates'))
 
-def jinja_escape_js(val):
-    return json.dumps(str(val))
+    def jinja_escape_js(val):
+        return json.dumps(str(val))
 
-env.filters['escape_json'] = jinja_escape_js
-template_full = env.get_template('alerts_full.tpl.json')
-template_lite = env.get_template('alerts.tpl.json')
-template_detail = env.get_template('alert_detail.tpl.json')
-template_count = env.get_template('counts.tpl.json')
+    env.filters['escape_json'] = jinja_escape_js
+    template_full = env.get_template('alerts_full.tpl.json')
+    template_lite = env.get_template('alerts.tpl.json')
+    template_detail = env.get_template('alert_detail.tpl.json')
+    template_count = env.get_template('counts.tpl.json')
 
-now = datetime.datetime.now(pytz.utc).astimezone(pytz.utc)
-now_utc = parser.parse(now.strftime("%Y-%m-%d %H:%M:%S %Z"))
-next_update_utc = now_utc + datetime.timedelta(minutes=5)
+    now = datetime.datetime.now(pytz.utc).astimezone(pytz.utc)
+    now_utc = parser.parse(now.strftime("%Y-%m-%d %H:%M:%S %Z"))
+    next_update_utc = now_utc + datetime.timedelta(minutes=5)
 
-# Write out the full file
-output_full_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
-output_full = template_full.render(alerts=alerts_list, written_at_utc=now_utc,
-    next_update_utc=next_update_utc)
-with codecs.open(output_full_filepath, 'w', 'utf-8') as f:
-    f.write(output_full)
+    # Write out the full file
+    output_full_filepath = os.path.join(CUR_DIR, 'output/alerts.json')
+    output_full = template_full.render(alerts=alerts_list, written_at_utc=now_utc,
+        next_update_utc=next_update_utc)
+    with codecs.open(output_full_filepath, 'w', 'utf-8') as f:
+        f.write(output_full)
 
-# Write out the regular file
-output_lite_filepath = os.path.join(JSON_DIR, 'alerts.json')
-output_lite = template_lite.render(alerts=alerts_list, written_at_utc=now_utc,
-    next_update_utc=next_update_utc)
-with codecs.open(output_lite_filepath, 'w', 'utf-8') as f:
-    f.write(output_lite)
+    # Write out the regular file
+    output_lite_filepath = os.path.join(JSON_DIR, 'alerts.json')
+    output_lite = template_lite.render(alerts=alerts_list, written_at_utc=now_utc,
+        next_update_utc=next_update_utc)
+    with codecs.open(output_lite_filepath, 'w', 'utf-8') as f:
+        f.write(output_lite)
 
-# Write out the count file
-count_filepath = os.path.join(JSON_DIR, 'counts.json')
-count_output = template_count.render(alerts=alerts_list, written_at_utc=now_utc,
-    next_update_utc=next_update_utc)
-with codecs.open(count_filepath, 'w', 'utf-8') as f:
-    f.write(count_output)
+    # Write out the count file
+    count_filepath = os.path.join(JSON_DIR, 'counts.json')
+    count_output = template_count.render(alerts=alerts_list, written_at_utc=now_utc,
+        next_update_utc=next_update_utc)
+    with codecs.open(count_filepath, 'w', 'utf-8') as f:
+        f.write(count_output)
 
-# Make sure output detail directory exists
-if not os.path.exists(os.path.join(CUR_DIR, 'output/detail')):
-    os.makedirs(os.path.join(CUR_DIR, 'output/detail'))
+    # Make sure output detail directory exists
+    if not os.path.exists(os.path.join(CUR_DIR, 'output/detail')):
+        os.makedirs(os.path.join(CUR_DIR, 'output/detail'))
 
-# Loop through all the alerts and write out individual detail pages
-for alert in alerts_list:
-    output_detail = template_detail.render(alert=alert, written_at_utc=now_utc)
-    output_detail_filepath = os.path.join(JSON_DIR, 'detail/%s.json' % alert['uuid'])
-    with codecs.open(output_detail_filepath, 'w', 'utf-8') as f:
-        f.write(output_detail)
+    # Loop through all the alerts and write out individual detail pages
+    for alert in alerts_list:
+        output_detail = template_detail.render(alert=alert, written_at_utc=now_utc)
+        output_detail_filepath = os.path.join(JSON_DIR, 'detail/%s.json' % alert['uuid'])
+        with codecs.open(output_detail_filepath, 'w', 'utf-8') as f:
+            f.write(output_detail)
+
+    # Remove the PID file
+    remove_pidfile()
