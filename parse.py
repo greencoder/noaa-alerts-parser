@@ -417,7 +417,7 @@ if __name__ == "__main__":
                 # We will append any of the keywords we find to the event
                 matched_suffixes = []
                 for [key, value] in special_replacements_list:
-                    if type(key) == str:
+                    if type(key) == unicode:
                         if key in description:
                             matched_suffixes.append(value)
                     elif type(key) == list:
@@ -451,7 +451,7 @@ if __name__ == "__main__":
                 # Find any matching suffixes
                 matched_suffixes = []
                 for [key, value] in special_replacements_list:
-                    if type(key) == str:
+                    if type(key) == unicode:
                         if key in description:
                             matched_suffixes.append(value)
                     elif type(key) == list:
