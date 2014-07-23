@@ -416,9 +416,19 @@ if __name__ == "__main__":
 
                 # We will append any of the keywords we find to the event
                 matched_suffixes = []
-                for [keyword, suffix] in special_replacements_list:
-                    if keyword in description:
-                        matched_suffixes.append(suffix)
+                for [key, value] in special_replacements_list:
+                    if type(key) == str:
+                        if key in description:
+                            matched_suffixes.append(value)
+                    elif type(key) == list:
+                        # Check to make sure all items in the list are present
+                        for item in key:
+                            all_matched = True
+                            if not item in description:
+                                all_matched = False
+                        # If all items in the list key were present, we have a match
+                        if all_matched:
+                            matched_suffixes.append(value)
 
                 # Add all the suffixes to the event
                 if matched_suffixes:
@@ -440,9 +450,19 @@ if __name__ == "__main__":
 
                 # Find any matching suffixes
                 matched_suffixes = []
-                for [keyword, suffix] in special_replacements_list:
-                    if keyword in description:
-                        matched_suffixes.append(suffix)
+                for [key, value] in special_replacements_list:
+                    if type(key) == str:
+                        if key in description:
+                            matched_suffixes.append(value)
+                    elif type(key) == list:
+                        # Check to make sure all items in the list are present
+                        for item in key:
+                            all_matched = True
+                            if not item in description:
+                                all_matched = False
+                        # If all items in the list key were present, we have a match
+                        if all_matched:
+                            matched_suffixes.append(value)
 
                 # Add the suffixes
                 if matched_suffixes:
