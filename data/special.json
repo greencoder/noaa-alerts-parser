@@ -24,6 +24,7 @@
     ["scattered showers", "Rain"],
     ["blowing snow", "Snow"],
     ["heavy snow", "Snow"],
+    ["snow showers", "Snow"],
     ["snowfall", "Snow"],
     ["lightning", "Thunderstorms"],
     ["thunderstorm", "Thunderstorms"],
