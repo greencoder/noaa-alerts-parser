@@ -27,7 +27,7 @@
 			],
 			"counties": [{% for county in alert.counties_list %} 
 				{
-					"name": "{{ county.name }}",
+					"name": {{ county.name|escape_json }},
 					"state": {{ county.state|escape_json }},
 					"fips": {{ county.fips|escape_json }},
 					"lng": {{ county.lng }},
@@ -36,8 +36,18 @@
 					"box": {{ county.bbox }}
 				}{% if not loop.last %},{% endif %}{% endfor %}
 			],
+			"zones": [{% for zone in alert.ugc_zones_list %}
+			    {
+		            "name": {{ zone.name|escape_json }},
+		            "cwa": {{ zone.cwa|escape_json }},
+		            "code": {{ zone.state_zone|escape_json }},
+		            "lat": {{ zone.lat }},
+		            "lng": {{ zone.lng }},
+		            "box": {{ zone.bbox }}
+			    }{% if not loop.last %},{% endif %}{% endfor %}
+			],
 			"area_description": {{ alert.area_desc|escape_json }},
-			"polygon": {{ alert.formatted_polygon }},
+			"polygon": {{ alert.polygon_coords|escape_json }},
 			"summary": {{ alert.summary|escape_json }},
 			"instruction": {{ alert.instruction|escape_json }},
 			"description": {{ alert.description|escape_json }},

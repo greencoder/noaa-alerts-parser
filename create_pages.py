@@ -23,7 +23,6 @@ for dir_name in ['json/events', 'json/severities', 'json/states', 'json/detail',
     if not os.path.exists(os.path.join(CUR_DIR, 'output/%s' % dir_name)):
         os.makedirs(os.path.join(CUR_DIR, 'output/%s' % dir_name))
 
-
 ### Part 2: Load up the data from JSON files ###
 
 # Load the full alerts data

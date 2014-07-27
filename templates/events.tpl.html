@@ -123,6 +123,14 @@ h1 {
         {% endfor %}
         </p>
 
+        <p>
+            <strong>Zones:</strong><br/>
+        {% if not alert.zones %}None{% endif %}
+        {% for zone in alert.zones %}
+            {{ zone.name }} ({{ zone.code }}){% if not loop.last %},{% endif %}
+        {% endfor %}
+        </p>
+
     </div>
     {% endfor %}
 </div>

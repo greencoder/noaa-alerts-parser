@@ -32,6 +32,16 @@
 			"box": {{ county.bbox }}
 		}{% if not loop.last %},{% endif %}{% endfor %}
 	],
+	"zones": [{% for zone in alert.ugc_zones_list %}
+	    {
+            "name": {{ zone.name|escape_json }},
+            "cwa": {{ zone.cwa|escape_json }},
+            "code": {{ zone.state_zone|escape_json }},
+            "lat": {{ zone.lat }},
+            "lng": {{ zone.lng }},
+            "box": {{ zone.bbox }}
+	    }{% if not loop.last %},{% endif %}{% endfor %}
+	],
 	"area_description": {{ alert.area_desc|escape_json }},
 	"polygon": {{ alert.formatted_polygon }},
 	"summary": {{ alert.summary|escape_json }},
