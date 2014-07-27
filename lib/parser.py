@@ -19,7 +19,7 @@ class Parser():
         self.output_dir = os.path.join(root_dir, 'output')
         self.logs_dir = os.path.join(self.output_dir, 'logs/')
         self.json_dir = os.path.join(self.output_dir, 'json/')
-        self.detail_dir = os.path.join(self.json_dir, 'detail')
+        self.detail_dir = os.path.join(self.json_dir, 'detail/')
 
         # Make sure the output directories exist
         self.ensure_directory_exists(self.output_dir)
