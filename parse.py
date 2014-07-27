@@ -87,10 +87,10 @@ if __name__ == "__main__":
                 # Create a Shapely polygon from the coords
                 alert.polygon = shapely.geometry.Polygon(alert.polygon_coords)
             except Parser.GeometryError:
-                alert.polygon_coords = None
+                alert.polygon_coords = []
                 alert.polygon = None
         else:
-            alert.polygon_coords = None
+            alert.polygon_coords = []
             alert.polygon = None
 
         # Find all the counties for this alert
