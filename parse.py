@@ -196,9 +196,13 @@ if __name__ == "__main__":
                     alert.region = "Unknown"
 
         # If the alert event is "Special Weather Statement" or "Severe Weather Statement", 
-        # see if we can identify elements in the description to refine that
+        # see if we can identify elements in the description to make it more clear. This will
+        # become a new element we call "event_title"
         if alert.event == "Special Weather Statement" or alert.event == "Severe Weather Statement":
-            alert.event = parser.refine_weather_statement(alert.description)
+            alert.event_title = parser.refine_weather_statement(alert.description)
+        else:
+            # If it's not "Special Weather Statement", just use the event type as the event title
+            alert.event_title = alert.event
 
         # We are done with this alert, so append it to the list
         alerts_list.append(alert)

@@ -8,6 +8,7 @@
 	"status": {{ alert.status|escape_json }},
 	"message_type": {{ alert.msg_type|escape_json }},
 	"event": {{ alert.event|escape_json }},
+	"event_title": {{ alert.event_title|escape_json }}, 
 	"category": {{ alert.category|escape_json }},
 	"urgency": {{ alert.urgency|escape_json }},
 	"severity": {{ alert.severity|escape_json }},
@@ -33,14 +34,14 @@
 		}{% if not loop.last %},{% endif %}{% endfor %}
 	],
 	"zones": [{% for zone in alert.ugc_zones_list %}
-	    {
-            "name": {{ zone.name|escape_json }},
-            "cwa": {{ zone.cwa|escape_json }},
-            "code": {{ zone.state_zone|escape_json }},
-            "lat": {{ zone.lat }},
-            "lng": {{ zone.lng }},
-            "box": {{ zone.bbox }}
-	    }{% if not loop.last %},{% endif %}{% endfor %}
+		{
+			"name": {{ zone.name|escape_json }},
+			"cwa": {{ zone.cwa|escape_json }},
+			"code": {{ zone.state_zone|escape_json }},
+			"lat": {{ zone.lat }},
+			"lng": {{ zone.lng }},
+			"box": {{ zone.bbox }}
+		}{% if not loop.last %},{% endif %}{% endfor %}
 	],
 	"area_description": {{ alert.area_desc|escape_json }},
 	"polygon": {{ alert.polygon_coords|escape_json }},

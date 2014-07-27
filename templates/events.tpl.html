@@ -97,6 +97,7 @@ h1 {
     <div class="content">
 
         <p>
+            <strong>Title:</strong> {{ alert.event_title }}<br/>
             <strong>By:</strong> {{ alert.sender|default("None") }}<br/>
             <strong>Severity:</strong> {{ alert.severity|default("Unspecified") }}<br/>
         </p>
