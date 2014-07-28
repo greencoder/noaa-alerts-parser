@@ -19,10 +19,10 @@
 	"effective": {{ alert.effective|escape_json }},
 	"expires": {{ alert.expires|escape_json }},
 	"region": {{ alert.region|escape_json }},
-	"states": [{% for state in alert.states_list %}
+	"states": [{% for state in alert.states %}
 		{{ state|escape_json }}{% if not loop.last %},{% endif %}{% endfor %}
 	],
-	"counties": [{% for county in alert.counties_list %} 
+	"counties": [{% for county in alert.counties %} 
 		{
 			"name": "{{ county.name }}",
 			"state": {{ county.state|escape_json }},
@@ -32,7 +32,7 @@
 			"bbox": {{ county.bbox }}
 		}{% if not loop.last %},{% endif %}{% endfor %}
 	],
-	"zones": [{% for zone in alert.ugc_zones_list %}
+	"ugc_zones": [{% for zone in alert.ugc_zones %}
 		{
 			"name": {{ zone.name|escape_json }},
 			"cwa": {{ zone.cwa|escape_json }},

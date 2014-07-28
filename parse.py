@@ -47,7 +47,7 @@ if __name__ == "__main__":
     alerts_list = []
 
     # Loop through all the 'entry' nodes we found
-    for entry_el in entries_list:
+    for entry_el in entries_list[0:2]:
 
         # Alert is just a lightweight object wrapper to keep the code clean (cleaner syntax
         # than using a dictionary)
@@ -183,22 +183,23 @@ if __name__ == "__main__":
             alert.ugc_codes_list = list(set(alert.ugc_codes_list))
 
             # Find the counties and states associated with the fips code list
-            alert.counties_list = parser.get_counties_by_fips(alert.county_fips_list)
-            alert.states_list = parser.get_states_by_county_fips(alert.county_fips_list)
-            alert.ugc_zones_list = parser.get_zones_by_code(alert.ugc_codes_list)
+            alert.counties = parser.get_counties_by_fips(alert.county_fips_list)
+            alert.states = parser.get_states_by_county_fips(alert.county_fips_list)
+            alert.ugc_zones = parser.get_zones_by_code(alert.ugc_codes_list)
 
             # Find the states associated with the UGC Zones and append them
             extra_states = parser.get_states_by_ugc_codes(alert.ugc_codes_list)
-            alert.states_list.extend(extra_states)
+            alert.states.extend(extra_states)
 
-            # Make the lists of counties and states unique
-            alert.counties_list = {c['fips']:c for c in alert.counties_list}.values()
-            alert.states_list = list(set([s['name'] for s in alert.states_list]))
+            # Make the lists of counties, states, and zones unique
+            alert.counties = {c['fips']:c for c in alert.counties}.values()
+            alert.ugc_zones = {z['code']:z for z in alert.ugc_zones}.values()
+            alert.states = list(set([s['name'] for s in alert.states]))
 
             # If we cannot find a region, use the list of states
             if alert.region == None:
-                if len(alert.states_list) > 0:
-                    alert.region = ", ".join(alert.states_list)
+                if len(alert.states) > 0:
+                    alert.region = ", ".join(alert.states)
                 else:
                     alert.region = "Unknown"
 

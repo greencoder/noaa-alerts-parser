@@ -127,8 +127,8 @@ h1 {
 
         <p>
             <strong>Zones:</strong><br/>
-        {% if not alert.zones %}None{% endif %}
-        {% for zone in alert.zones %}
+        {% if not alert.ugc_zones %}None{% endif %}
+        {% for zone in alert.ugc_zones %}
             {{ zone.name }} ({{ zone.code }}){% if not loop.last %},{% endif %}
         {% endfor %}
         </p>

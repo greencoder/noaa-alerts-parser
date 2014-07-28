@@ -12,7 +12,7 @@
 			"severity": {{ alert.severity|escape_json }},
 			"expires": {{ alert.expires|escape_json }},
 			"region": {{ alert.region|escape_json }},
-			"states": [{% for state in alert.states_list %}
+			"states": [{% for state in alert.states %}
 				{{ state|escape_json }}{% if not loop.last %},{% endif %}{% endfor %}
 			],
 			"area_description": {{ alert.area_description|escape_json }}
