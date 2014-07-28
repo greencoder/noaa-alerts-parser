@@ -1,6 +1,6 @@
 {
-	"created_utc": {{ written_at_utc.isoformat()|escape_json }},
-	"next_update_utc": {{ next_update_utc.isoformat()|escape_json }},
+	"created": {{ created|escape_json }},
+	"next_update": {{ next_update|escape_json }},
 	"alerts_count": {{ alerts|length }},
 	"alerts": [
 	{% for alert in alerts %}
@@ -10,12 +10,12 @@
 			"event": {{ alert.event|escape_json }},
 			"event_title": {{ alert.event_title|escape_json }},
 			"severity": {{ alert.severity|escape_json }},
-			"expires": {{ alert.expires_utc.isoformat()|escape_json }},
+			"expires": {{ alert.expires|escape_json }},
 			"region": {{ alert.region|escape_json }},
 			"states": [{% for state in alert.states_list %}
-				{{ state.name|escape_json }}{% if not loop.last %},{% endif %}{% endfor %}
+				{{ state|escape_json }}{% if not loop.last %},{% endif %}{% endfor %}
 			],
-			"area_description": {{ alert.area_desc|escape_json }}
+			"area_description": {{ alert.area_description|escape_json }}
 		}{% if not loop.last %},{% endif %}
 	{% endfor %}
 	]

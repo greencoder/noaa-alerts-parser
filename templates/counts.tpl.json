@@ -1,5 +1,5 @@
 {
-	"created_utc": {{ written_at_utc.isoformat()|escape_json }},
-	"next_update_utc": {{ next_update_utc.isoformat()|escape_json }},
+	"created": {{ created|escape_json }},
+	"next_update": {{ next_update|escape_json }},
 	"alerts_count": {{ alerts|length }}
 }

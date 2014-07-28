@@ -7,7 +7,6 @@ import os
 import pytz
 import shapely.geometry
 import sys
-import urllib2
 
 from lxml import etree as ET
 
@@ -39,20 +38,23 @@ class Parser():
             self.states_dict[state['fips']] = state
             self.state_abbrs_dict[state['abbr']] = state
 
-        # Load counties
+        # Load counties into a dictionary with keys for both
+        # FIPS and UGC codes. This results in duplicates, but it's 
+        # the least painful way to pull this off.
         counties_filepath = os.path.join(self.data_dir, 'counties.json')
         self.counties_list = self.load_json(counties_filepath)
         self.counties_dict = {}
         for county in self.counties_list:
             self.counties_dict[county['fips']] = county
+            self.counties_dict[county['ugc']] = county
 
         # Load UGC Zones
         ugc_filepath = os.path.join(self.data_dir, 'ugc_zones.json')
         self.ugc_zones_list = self.load_json(ugc_filepath)
         self.ugc_zones_dict = {}
-        for ugc in self.ugc_zones_list:
-            zone = ugc['state'] + "Z" + ugc['zone']
-            self.ugc_zones_dict[zone] = ugc
+        for zone in self.ugc_zones_list:
+            zone_code = zone['state'] + zone['zone']
+            self.ugc_zones_dict[zone_code] = zone
 
         # Load Special Weather Statement replacements
         special_filepath = os.path.join(self.data_dir, 'special.json')
@@ -80,6 +82,12 @@ class Parser():
             self.value = value
         def __str__(self):
             return repr(self.value)
+
+    ### Convenience Methods ###
+    
+    def set_properties_from_dict(self, obj, dictionary):
+        for key,value in dictionary.items():
+            setattr(obj, key, value)
 
     ### Logging Methods ###
     
@@ -167,11 +175,9 @@ class Parser():
         else:
             return default_value
 
-    def load_xml_from_url(self, url):
-        f = urllib2.urlopen(url, timeout=10)
-        request_data = f.read()
+    def load_xml_from_url_contents(self, contents):
         try:
-            tree = ET.fromstring(request_data)
+            tree = ET.fromstring(contents)
             return tree
         except lxml.etree.XMLSyntaxError:
             raise self.XMLError("Error Loading XML from URL: %s" % url)
@@ -204,10 +210,6 @@ class Parser():
 
     ### Other Methods ###
 
-    def refine_special_weather_statement(self, description):
-        print "DEBUG: Need to work on refine_special_weather_statement"
-        return
-
     def get_counties_by_fips(self, county_fips_list):
         matched_counties = []
         for fips_code in county_fips_list:
@@ -219,7 +221,7 @@ class Parser():
                 county = self.counties_dict[fips_code]
                 matched_counties.append(county)
             except KeyError:
-                self.log("Could Not Find County FIPS: %s" % fips_code)
+                self.log("Could not find county with FIPS code: %s" % fips_code)
                 self.log_missing_fips(fips_code)
         return matched_counties
 
@@ -227,24 +229,26 @@ class Parser():
         matched_zones = []
         for zone_code in ugc_zone_codes_list:
             try:
-                ugc_zone = self.ugc_zones_dict[zone_code]
+                ugc_zone_code = zone_code[0:2] + zone_code[-3:]
+                ugc_zone = self.ugc_zones_dict[ugc_zone_code]
                 matched_zones.append(ugc_zone)
             except KeyError:
-                self.log("Count Not Find UGC Zone: %s" % zone_code)
-                self.log_missing_ugc(zone_code)
+                self.log("Could not find UGC zone with code: %s" % ugc_zone_code)
+                self.log_missing_ugc(ugc_zone_code)
         return matched_zones
 
     def get_states_by_ugc_codes(self, ugc_zone_codes_list):
         matched_states = []
         for ugc_code in ugc_zone_codes_list:
             try:
-                ugc_zone = self.ugc_zones_dict[ugc_code]
+                ugc_zone_code = ugc_code[0:2] + ugc_code[-3:]
+                ugc_zone = self.ugc_zones_dict[ugc_zone_code]
                 state_abbr = ugc_zone['state']
                 state = self.state_abbrs_dict[state_abbr]
                 matched_states.append(state)
             except KeyError:
-                self.log("Could not find UGC Zone Code: %s" % ugc_code)
-                self.log_missing_ugc(ugc_code)
+                self.log("Could not find UGC zone with code: %s" % ugc_zone_code)
+                self.log_missing_ugc(ugc_zone_code)
         return matched_states
 
     def get_states_by_county_fips(self, county_fips_list):
@@ -260,17 +264,29 @@ class Parser():
                 pass
         return matched_states
 
-    def get_county_fips_for_ugc_zones(self, ugc_zones_list):
+    def get_county_fips_for_ugc_codes(self, ugc_codes_list):
         additional_fips = []
-        for ugc_code in ugc_zones_list:
-            try:
-                ugc_zone = self.ugc_zones_dict[ugc_code]
-                for fips in ugc_zone['fips']:
-                    additional_fips.append(fips)
-            except KeyError:
-                self.log("Could not find UGC Zone Code: %s" % ugc_code)
-                self.log_missing_ugc(ugc_code)
-        return additional_fips
+        for ugc_code in ugc_codes_list:
+            # See if we're trying to look up a zone or a county
+            if ugc_code[2:3] == "Z":
+                try:
+                    ugc_zone_code = ugc_code[0:2] + ugc_code[-3:]
+                    ugc_zone = self.ugc_zones_dict[ugc_zone_code]
+                    for fips in ugc_zone['fips']:
+                        additional_fips.append(fips)
+                except KeyError:
+                    self.log("Could not find UGC zone with code: %s" % ugc_zone_code)
+                    self.log_missing_ugc(ugc_code)
+            elif ugc_code[2:3] == "C":
+                try:
+                    ugc_county_code = ugc_code[0:2] + ugc_code[-3:]
+                    ugc_county = self.counties_dict[ugc_county_code]
+                    additional_fips.append(ugc_county['fips'])
+                except KeyError:
+                    self.log("Could not find UGC county with code: %s" % ugc_county_code)
+                    self.log_missing_ugc(ugc_code)
+        # Return the unique fips
+        return list(set(additional_fips))
 
     def create_unique_identifier(self, string_to_hash):
         h = hashlib.new('ripemd160')
@@ -295,7 +311,7 @@ class Parser():
         for old_alert_dict in self.previous_alerts_list:
             if old_alert_dict['uuid'] == uuid:
                 # If we find the alert, make sure it's the same age
-                if old_alert_dict['updated'] == timestamp.isoformat():
+                if old_alert_dict['updated'] == timestamp:
                     return old_alert_dict
         return None
 
@@ -342,6 +358,7 @@ class Parser():
             return "Special Weather Statement"
 
     def get_region_from_sender(self, sender):
+
         # Sender will look like this: "NWS Reno (Western Nevada)" so 
         # we need to find what is between the parentheses
         start_index = sender.find("(")
@@ -352,9 +369,10 @@ class Parser():
             region = region[0].upper() + region[1:]
         else:
             region = None
+
         # The storm prediction center in Norman, OK might have published this
         # even if the area has nothing to do with Oklahoma, so check it
-        if "Norman, Oklahoma" in region:
+        if region is not None and "Norman, Oklahoma" in region:
             region = None
 
         return region

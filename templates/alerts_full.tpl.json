@@ -1,6 +1,6 @@
 {
-	"created_utc": {{ written_at_utc.isoformat()|escape_json }},
-	"next_update_utc": {{ next_update_utc.isoformat()|escape_json }},
+	"created": {{ created|escape_json }},
+	"next_update": {{ next_update|escape_json }},
 	"alerts": [
 	{% for alert in alerts %}
 		{
@@ -10,21 +10,21 @@
 			"author": {{ alert.author|escape_json }},
 			"sender": {{ alert.sender|escape_json }},
 			"status": {{ alert.status|escape_json }},
-			"message_type": {{ alert.msg_type|escape_json }},
+			"message_type": {{ alert.message_type|escape_json }},
 			"event": {{ alert.event|escape_json }},
 			"event_title": {{ alert.event_title|escape_json }},
 			"category": {{ alert.category|escape_json }},
 			"urgency": {{ alert.urgency|escape_json }},
 			"severity": {{ alert.severity|escape_json }},
 			"certainty": {{ alert.certainty|escape_json }},
-			"timezone": {{ alert.timezone_abbr|escape_json }},
-			"updated": {{ alert.updated_utc.isoformat()|escape_json }},
-			"published": {{ alert.published_utc.isoformat()|escape_json }},
-			"effective": {{ alert.effective_utc.isoformat()|escape_json }},
-			"expires": {{ alert.expires_utc.isoformat()|escape_json }},
+			"timezone": {{ alert.timezone|escape_json }},
+			"updated": {{ alert.updated|escape_json }},
+			"published": {{ alert.published|escape_json }},
+			"effective": {{ alert.effective|escape_json }},
+			"expires": {{ alert.expires|escape_json }},
 			"region": {{ alert.region|escape_json }},
 			"states": [{% for state in alert.states_list %}
-				{{ state.name|escape_json }}{% if not loop.last %},{% endif %}{% endfor %}
+				{{ state|escape_json }}{% if not loop.last %},{% endif %}{% endfor %}
 			],
 			"counties": [{% for county in alert.counties_list %} 
 				{
@@ -33,22 +33,21 @@
 					"fips": {{ county.fips|escape_json }},
 					"lng": {{ county.lng }},
 					"lat": {{ county.lat }},
-					"point": [{{ county.lng }}, {{ county.lat }}],
-					"box": {{ county.bbox }}
+					"bbox": {{ county.bbox }}
 				}{% if not loop.last %},{% endif %}{% endfor %}
 			],
 			"zones": [{% for zone in alert.ugc_zones_list %}
 				{
 					"name": {{ zone.name|escape_json }},
 					"cwa": {{ zone.cwa|escape_json }},
-					"code": {{ zone.state_zone|escape_json }},
+					"code": {{ zone.code|escape_json }},
 					"lat": {{ zone.lat }},
 					"lng": {{ zone.lng }},
-					"box": {{ zone.bbox }}
+					"bbox": {{ zone.bbox }}
 				}{% if not loop.last %},{% endif %}{% endfor %}
 			],
-			"area_description": {{ alert.area_desc|escape_json }},
-			"polygon": {{ alert.polygon_coords|escape_json }},
+			"area_description": {{ alert.area_description|escape_json }},
+			"polygon": {{ alert.polygon|escape_json }},
 			"summary": {{ alert.summary|escape_json }},
 			"instruction": {{ alert.instruction|escape_json }},
 			"description": {{ alert.description|escape_json }},

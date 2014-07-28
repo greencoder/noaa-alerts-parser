@@ -77,13 +77,13 @@ h1 {
 
 <a name="top"></a>
 
-<p id="time-header">Updated at: {{ written_at_utc.isoformat() }}</p>
+<p id="time-header">Updated at: {{ created }}</p>
 
 <div class="alert-toc">
     <p>Number of alerts: {{ alerts|length}} | <a href="/html/states.html">View Alerts by State</a></p>
     <p class="big"><strong>Jump to section:</strong></p>
 {% for group in alerts|groupby('event') %}
-    	<a class="toc" href="?{{ written_at_utc_ts }}#{{ group.grouper }}">{{ group.grouper }} ({{ group.list|length }})</a><br/>
+    	<a class="toc" href="?{{ created }}#{{ group.grouper }}">{{ group.grouper }} ({{ group.list|length }})</a><br/>
 {% endfor %}
 </div>
     

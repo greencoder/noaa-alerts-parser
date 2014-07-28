@@ -5,3 +5,5 @@ temp/*
 output/*
 tools/*
 PARSER.pid
+data/cwa/*.geojson
+data/zones/*.geojson

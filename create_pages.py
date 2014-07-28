@@ -65,8 +65,8 @@ events_dict = {}
 for event in events_data:
     filtered_alerts = [a for a in alerts if a['event'] == event]
     output_dict = {
-        "created_utc": alert_data['created_utc'],
-        "next_update_utc": alert_data['next_update_utc'],
+        "created": alert_data['created'],
+        "next_update": alert_data['next_update'],
         "alerts_count": len(filtered_alerts),
         "alerts": filtered_alerts,
     }
@@ -80,8 +80,8 @@ for event in events_data:
 filepath = os.path.join(JSON_DIR, 'events.json')
 ordered_events = collections.OrderedDict(sorted(events_dict.items()))
 output_dict = {
-    "created_utc": alert_data['created_utc'],
-    "next_update_utc": alert_data['next_update_utc'],
+    "created": alert_data['created'],
+    "next_update": alert_data['next_update'],
     "events": ordered_events,
 }
 with codecs.open(filepath, 'w', encoding='UTF-8') as f:
@@ -95,8 +95,8 @@ severities_dict = {}
 for severity in severities_data:
     filtered_alerts = [a for a in alerts if a['severity'] == severity]
     output_dict = {
-        "created_utc": alert_data['created_utc'],
-        "next_update_utc": alert_data['next_update_utc'],
+        "created": alert_data['created'],
+        "next_update": alert_data['next_update'],
         "alerts_count": len(filtered_alerts),
         "alerts": filtered_alerts,
     }
@@ -110,8 +110,8 @@ for severity in severities_data:
 filepath = os.path.join(JSON_DIR, 'severities.json')
 ordered_severities = collections.OrderedDict(sorted(severities_dict.items()))
 output_dict = {
-    "created_utc": alert_data['created_utc'],
-    "next_update_utc": alert_data['next_update_utc'],
+    "created": alert_data['created'],
+    "next_update": alert_data['next_update'],
     "serverities": ordered_severities,
 }
 with codecs.open(filepath, 'w', encoding='UTF-8') as f:
@@ -125,8 +125,8 @@ states_dict = {}
 for state in states_data:
     filtered_alerts = [a for a in alerts if state['name'] in a['states']]
     output_dict = {
-        "created_utc": alert_data['created_utc'],
-        "next_update_utc": alert_data['next_update_utc'],
+        "created": alert_data['created'],
+        "next_update": alert_data['next_update'],
         "alerts_count": len(filtered_alerts),
         "alerts": filtered_alerts,
     }
@@ -140,8 +140,8 @@ for state in states_data:
 filepath = os.path.join(JSON_DIR, 'states.json')
 ordered_states = collections.OrderedDict(sorted(states_dict.items()))
 output_dict = {
-    "created_utc": alert_data['created_utc'],
-    "next_update_utc": alert_data['next_update_utc'],
+    "created": alert_data['created'],
+    "next_update": alert_data['next_update'],
     "states": ordered_states,
 }
 with codecs.open(filepath, 'w', encoding='UTF-8') as f:
@@ -166,8 +166,8 @@ for alert in full_alerts:
     })
 
 output_dict = {
-    "created_utc": alert_data['created_utc'],
-    "next_update_utc": alert_data['next_update_utc'],
+    "created": alert_data['created'],
+    "next_update": alert_data['next_update'],
     "alerts": located_alerts,
 }
 with codecs.open(filepath, 'w', encoding='UTF-8') as f:
@@ -183,8 +183,8 @@ for state_dict in states_data:
 
 # Write out the events html file
 template = env.get_template('events.tpl.html')
-created_utc = arrow.get(alert_data['created_utc'])
-output = template.render(alerts=full_alerts, written_at_utc=created_utc, written_at_utc_ts=created_utc.timestamp)
+created = arrow.get(alert_data['created'])
+output = template.render(alerts=full_alerts, created=created)
 
 output_filepath = os.path.join(HTML_DIR, 'events.html')
 with codecs.open(output_filepath, 'w', 'utf-8') as f:
@@ -213,9 +213,8 @@ for alert in full_alerts:
         alerts_by_state[state_name].append(alert)
 
 template = env.get_template('states.tpl.html')
-created_utc = arrow.get(alert_data['created_utc'])
-output = template.render(states=alerts_by_state, written_at_utc=created_utc,
-    written_at_utc_ts=created_utc.timestamp)
+created = arrow.get(alert_data['created'])
+output = template.render(states=alerts_by_state, created=created)
 
 output_filepath = os.path.join(HTML_DIR, 'states.html')
 with codecs.open(output_filepath, 'w', 'utf-8') as f:
