@@ -47,7 +47,7 @@ if __name__ == "__main__":
     alerts_list = []
 
     # Loop through all the 'entry' nodes we found
-    for entry_el in entries_list[0:2]:
+    for entry_el in entries_list:
 
         # Alert is just a lightweight object wrapper to keep the code clean (cleaner syntax
         # than using a dictionary)
