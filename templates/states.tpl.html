@@ -81,7 +81,7 @@ h1 {
 <p id="time-header">Updated at: {{ created }}</p>
 
 <div class="alert-toc">
-    <p>Number of alerts: {{ alerts_count }} | <a href="/html/events.html">View Alerts by Type</a> | <a href="/html/severities.html">View Alerts by Severity</a></p>
+    <p>Number of alerts: {{ alerts|length }} | <a href="/html/events.html">View Alerts by Type</a> | <a href="/html/severities.html">View Alerts by Severity</a></p>
     <p class="big"><strong>Jump to state:</strong></p>
     {% for state, alerts in states.items()|sort %}
         <a class="toc" href="?{{ created }}#{{ state }}">{{ state }} ({{ alerts|length }})</a><br/>
