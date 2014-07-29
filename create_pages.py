@@ -214,7 +214,7 @@ for alert in full_alerts:
 
 template = env.get_template('states.tpl.html')
 created = arrow.get(alert_data['created'])
-output = template.render(states=alerts_by_state, created=created)
+output = template.render(states=alerts_by_state, created=created, count=len(full_alerts))
 
 output_filepath = os.path.join(HTML_DIR, 'states.html')
 with codecs.open(output_filepath, 'w', 'utf-8') as f:
