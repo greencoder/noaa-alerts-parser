@@ -9,8 +9,7 @@ type='text/css'>
 <script type="text/javascript">
 
 $(document).ready(function() {
-	var d = new Date(0);
-	d.setUTCSeconds({{ written_at_utc_ts }});
+	var d = new Date("{{ created }}");
 	$('#time-header').append(" (" + d.toString() + ")");
 });
 
