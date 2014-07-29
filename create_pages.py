@@ -219,3 +219,14 @@ output = template.render(states=alerts_by_state, created=created)
 output_filepath = os.path.join(HTML_DIR, 'states.html')
 with codecs.open(output_filepath, 'w', 'utf-8') as f:
     f.write(output)
+
+### Part 10: Write static HTML file for severities
+
+# Write out the severities html file
+template = env.get_template('severities.tpl.html')
+created = arrow.get(alert_data['created'])
+output = template.render(alerts=full_alerts, created=created)
+
+output_filepath = os.path.join(HTML_DIR, 'severities.html')
+with codecs.open(output_filepath, 'w', 'utf-8') as f:
+    f.write(output)

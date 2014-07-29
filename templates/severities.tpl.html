@@ -9,9 +9,9 @@ type='text/css'>
 <script type="text/javascript">
 
 $(document).ready(function() {
-    var d = new Date(0);
-    d.setUTCSeconds({{ written_at_utc_ts }});
-    $('#time-header').append(" (" + d.toString() + ")");
+	var d = new Date(0);
+	d.setUTCSeconds({{ written_at_utc_ts }});
+	$('#time-header').append(" (" + d.toString() + ")");
 });
 
 </script>
@@ -32,20 +32,20 @@ h1 {
     box-sizing:border-box;
     -moz-box-sizing:border-box;
     border: 3px solid #EDF3FE;
-    margin-bottom: 40px;
+	margin-bottom: 40px;
 }
 .alert-group > .header {
     background-color: #EDF3FE;
 }
 .alert-group > .header h1 a {
-    text-decoration: none;
-    color: #000;
+	text-decoration: none;
+	color: #000;
 }
 .alert-group > .content {
     font-family: 'Droid Serif', serif;
     border-top: 3px solid #EDF3FE;
     line-height: 1.5em;
-    padding: 15px;
+	padding: 15px;
 }
 .alert-toc {
     box-sizing:border-box;
@@ -54,21 +54,20 @@ h1 {
     line-height: 1.5em;
     margin-left: 10px;
     color: #000;
-    padding: 0px;
-    margin: 0px;
-    margin-bottom: 40px;
+	padding: 0px;
+	margin: 0px;
+	margin-bottom: 40px;
 }
 .alert-toc .big {
-    font-size: 1.3em;
+	font-size: 1.3em;
 }
 .alert-toc a.toc, 
 .alert-toc a.visited.toc {
     text-decoration: none;
-    margin-left: 15px;
+	margin-left: 15px;
 }
-
 #time-header {
-    margin: 0px;
+	margin: 0px;
 }
 </style>
 
@@ -81,45 +80,45 @@ h1 {
 <p id="time-header">Updated at: {{ created }}</p>
 
 <div class="alert-toc">
-    <p>Number of alerts: {{ alerts_count }} | <a href="/html/events.html">View Alerts by Type</a> | <a href="/html/severities.html">View Alerts by Severity</a></p>
-    <p class="big"><strong>Jump to state:</strong></p>
-    {% for state, alerts in states.items()|sort %}
-        <a class="toc" href="?{{ created }}#{{ state }}">{{ state }} ({{ alerts|length }})</a><br/>
-    {% endfor %}
+    <p>Number of alerts: {{ alerts|length}} | <a href="/html/states.html">View Alerts by State</a> | <a href="/html/events.html">View Alerts by Event</a></p>
+    <p class="big"><strong>Jump to severity:</strong></p>
+{% for group in alerts|groupby('severity') %}
+    	<a class="toc" href="?{{ created }}#{{ group.grouper }}">{{ group.grouper }} ({{ group.list|length }})</a><br/>
+{% endfor %}
 </div>
-
-{% for state, alerts in states.iteritems() %}
+    
+{% for group in alerts|groupby('severity') %}
 <div class="alert-group">
     <div class="header">
-        <a name="{{ state }}"></a>
-        <h1><a href="#top">{{ state }}</a></h1>
+        <a name="{{ group.grouper }}"></a>
+        <h1><a href="#top">{{ group.grouper }}</a></h1>
     </div>
-    {% for alert in alerts %}
+    {% for alert in group.list %}
     <div class="content">
 
-        <p><strong>{{ alert.event_title }}</strong></p>
-
         <p>
-            <strong>By:</strong> {{ alert.sender }}<br/>
+            <strong>Title:</strong> {{ alert.event_title }}<br/>
+            <strong>By:</strong> {{ alert.sender|default("None") }}<br/>
             <strong>Severity:</strong> {{ alert.severity|default("Unspecified") }}<br/>
         </p>
 
         {% if alert.description %}
         <p>
             <strong>Description:</strong><br/>
-            {{ alert.description }}
+			{{ alert.description }}
         </p>
         {% endif %}
 
         {% if alert.instruction %}
         <p>
             <strong>Instruction:</strong><br/>
-            {{ alert.instruction }}
+			{{ alert.instruction }}
         </p>
         {% endif %}
 
         <p>
             <strong>Counties:</strong><br/>
+        {% if not alert.counties %}None{% endif %}
         {% for county in alert.counties %}
             {{ county.name }}, {{ county.state }}{% if not loop.last %},{% endif %}
         {% endfor %}
