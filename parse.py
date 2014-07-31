@@ -223,10 +223,7 @@ if __name__ == "__main__":
 
     # Add a custom filter to the template engine
     def jinja_escape_js(val):
-        if type(val) == str or type(val) == unicode:
-            return json.dumps(str(val))
-        else:
-            return json.dumps(val)
+        return json.dumps(val, ensure_ascii=True)
 
     env.filters['escape_json'] = jinja_escape_js
 
