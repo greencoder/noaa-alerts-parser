@@ -1,37 +1,61 @@
 [
     ["cold temperatures", "Cold"],
     ["alert has expired", "Expired"],
+
     ["fire danger", "Fire Danger"],
     ["fire warning", "Fire Danger"],
     ["red flag", "Fire Danger"],
     ["flood", "Flooding"],
+
     ["heavy rain", "Flooding"],
     ["river levels", "Flooding"],
     ["water levels", "Flooding"],
+    ["standing water", "Flooding"],
+
     ["areas of fog", "Fog"],
     ["dense fog", "Fog"],
     [["fog", "visibility"], "Fog"],
     [["fog", "dense"], "Fog"],
     ["patchy fog", "Fog"],
+
+    ["patchy frost", "Frost"],
+    ["hard frost", "Frost"],
+    [["frost", "cold"], "Frost"],
+
     ["valley fog", "Fog"],
+
     ["hail", "Hail"],
+
     ["heat index", "Heat"],
     ["heat indices", "Heat"],
     ["high temperatures", "Heat"],
     ["hot temperatures", "Heat"],
+    [["warm", "temperatures"], "Heat"],
+
     ["downpours", "Rain"],
     ["inches of rain", "Rain"],
     ["rain showers", "Rain"],
-    ["rainfall", "Rain"],
     ["scattered showers", "Rain"],
+    ["rainfall", "Rain"],
+    ["showers", "Rain"],
+
+    ["light snow", "Snow"],
     ["blowing snow", "Snow"],
     ["heavy snow", "Snow"],
+    [["snow", "accumulation"], "Snow"],
+    [["snow", "inches"], "Snow"],    
     ["snow showers", "Snow"],
     ["snowfall", "Snow"],
+    ["wintry weather", "Snow"],
+
     ["lightning", "Thunderstorms"],
     ["thunderstorm", "Thunderstorms"],
-    ["funnel clouds", "Tornado"],
+
+    ["funnel cloud", "Tornado"],
     ["tornado", "Tornado"],
+
+    [["earthquake", "tsunami"], "Tsunami"],
+    
     [["strong", "wind"], "Wind"],
     ["outflow boundary", "Wind"],
     ["gusty winds", "Wind"],
